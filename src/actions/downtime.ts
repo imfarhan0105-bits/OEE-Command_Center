@@ -32,9 +32,16 @@ export async function updateTotalDowntime({
   }
 }
 
-export async function getDowntimeCategories() {
+export async function getDowntimeCategories(): Promise<{ id: string; name: string; color: string }[]> {
   const snap = await getDocs(collection(db, "downtime_categories"));
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  return snap.docs.map(d => {
+    const data = d.data();
+    return {
+      id: d.id,
+      name: data.name as string,
+      color: data.color as string,
+    };
+  });
 }
 
 export async function upsertDowntimeCategory({
