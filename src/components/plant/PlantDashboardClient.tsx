@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { Plant, OEETrendPoint, DowntimeData } from "@/types";
+import { Plant, OEETrendPoint, DowntimeData, PlantSlug } from "@/types";
 import { AVAILABLE_MONTHS } from "@/data/mockOee";
 import { compare, monthLabel } from "@/lib/oee";
 import MonthTimeline from "./MonthTimeline";

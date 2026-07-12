@@ -6,7 +6,15 @@ import { monthLabel } from "@/lib/oee";
 export async function getDowntime(plantSlug: PlantSlug): Promise<DowntimeData[]> {
   const oeeQuery = query(collection(db, "monthly_oee"), where("plantSlug", "==", plantSlug));
   const oeeSnap = await getDocs(oeeQuery);
-  const oeeRows = oeeSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const oeeRows = oeeSnap.docs.map(d => {
+    const data = d.data();
+    return {
+      id: d.id,
+      year: data.year as number,
+      month: data.month as number,
+      totalDowntime: data.totalDowntime as number
+    };
+  });
 
   const entriesQuery = query(collection(db, "downtime_entries"), where("plantSlug", "==", plantSlug));
   const entriesSnap = await getDocs(entriesQuery);
