@@ -67,4 +67,4 @@ npx tsx scripts/seedFirestore.ts
 
 ---
 
-*Designed and developed with caffeine and Next.js during an incredible internship experience at Ramco Steels Pvt. Ltd.*
+*Designed and developed with Next.js during an incredible internship experience at Ramco Steels Pvt. Ltd.*

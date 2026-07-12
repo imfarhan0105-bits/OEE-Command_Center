@@ -19,8 +19,8 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   role: null,
   loading: true,
-  signIn: async () => {},
-  logOut: async () => {},
+  signIn: async () => { },
+  logOut: async () => { },
 });
 
 const EDITORS = [
