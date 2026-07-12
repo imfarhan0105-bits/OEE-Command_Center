@@ -1,64 +1,70 @@
-# OEE Command Center
+# 🏭 OEE Command Center 
 
-Cinematic, scroll-driven industrial OEE monitoring dashboard. Next.js 16 (App Router) + TypeScript + Tailwind v4, React Three Fiber / drei for 3D, GSAP ScrollTrigger + Lenis for scroll storytelling, Recharts for analytics.
+Hey there! Welcome to the **OEE Command Center** — a digital manufacturing observation system I built from the ground up during my internship at **Ramco Steels Pvt. Ltd.** 
 
-## Run it
+## 💡 The Story Behind the Project
 
+Before this project, tracking machine efficiency across multiple massive manufacturing sectors (like Sector 25, Sector 69, and various individual units) involved a lot of disconnected spreadsheets, delayed reporting, and manual data entry. It worked, but it wasn't *fast*, and it definitely wasn't easy to look at.
+
+I was tasked with solving this problem. The goal? Build a centralized digital nervous system for the factory floor. 
+
+The result is this application. It completely digitizes the tracking of **Overall Equipment Effectiveness (OEE)** — which breaks down into Availability, Performance, and Quality. Instead of waiting for weekly Excel roll-ups, plant managers and executives can now log in and instantly see exactly how their CNC machines, VMC units, and massive Forging presses are performing in real-time.
+
+## 🚀 What Makes It Awesome?
+
+I didn't just want to build another boring corporate dashboard with a white background and some bar charts. I wanted it to feel like you were stepping into a mission control room. 
+
+- **Interactive 3D Factory Floor:** Built with React Three Fiber, you can physically see 3D representations of the machines running right in your browser. (We even made sure you never see the back of the machines as they gently oscillate!)
+- **Completely Serverless:** We completely ditched heavy, traditional databases. The entire app is powered by **Firebase Firestore**, meaning it scales infinitely, costs essentially nothing to host, and is lightning fast.
+- **Role-Based Security:** Floor managers can securely log in via Google Authentication to input daily machine downtime and production metrics, while executives can log in as Viewers to safely observe the data without accidentally changing anything.
+- **Industrial Dark Aesthetics:** A bespoke, highly-polished dark mode interface that uses custom animations and color-coded metrics to make manufacturing data actually look *cool*.
+
+It solves the very real industrial problem of data visibility, and it does it with zero lag and an incredibly premium user experience.
+
+---
+
+## 🛠️ How to Set It Up
+
+If you're a developer looking to run this locally, here is exactly how to get it spinning on your own machine.
+
+### 1. Clone & Install
+First, clone the repository and install all the dependencies.
 ```bash
+git clone https://github.com/your-username/oee-command-center.git
+cd oee-command-center
 npm install
-npm run dev      # http://localhost:3000
 ```
 
-Production check:
+### 2. Configure Firebase
+Because this app is entirely serverless, you don't need to spin up a local database or Prisma schema! You just need a free Firebase project.
+1. Head over to the [Firebase Console](https://console.firebase.google.com/) and create a new project.
+2. Enable **Firestore Database** and **Google Authentication**.
+3. Create a `.env.local` file in the root of your project folder.
+4. Drop in your Firebase web configuration keys like this:
 
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY="your-api-key"
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="your-auth-domain"
+NEXT_PUBLIC_FIREBASE_PROJECT_ID="your-project-id"
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="your-storage-bucket"
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="your-sender-id"
+NEXT_PUBLIC_FIREBASE_APP_ID="your-app-id"
+```
+*(Note: If you don't do this, the app won't crash—it will just politely show you a beautifully designed warning page!)*
+
+### 3. Run the Development Server
+Fire up the Next.js Turbopack compiler:
 ```bash
-npm run build
-npm run start -- -p 4173
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the command center in action.
+
+### 4. (Optional) Seed the Database
+If you want to populate your fresh database with the factory structures and zeroed-out starting metrics, you can run the built-in seeder:
+```bash
+npx tsx scripts/seedFirestore.ts
 ```
 
-Node 18+ recommended. No external API keys needed — everything runs on mock data.
+---
 
-## What's built
-
-- **Homepage (`/`)** — pinned 3D scroll journey (GSAP ScrollTrigger, ~420vh):
-  Scene 1 factory awakens -> Scene 2 A x P x Q rings align into company OEE ->
-  Scene 3 split into Sector 25 / IMT ecosystems, followed by normal-scroll
-  DOM sections: aggregated OEE per group (Scene 4/5), executive comparison
-  charts (Scene 6), and a 7-plant node grid (Scene 7) linking into dashboards.
-- **Plant dashboards (`/plants/[slug]`)** — one reusable template for all 7
-  plants (`sector-25-forging`, `sector-25-cnc`, `sector-25-vmc`, `sector-69`,
-  `sector-58`, `unit-94`, `unit-97`): 3D hero object, cinematic month
-  timeline, A/P/Q data-entry form with live OEE preview, dynamic downtime
-  category editor, and a full analytics section (trend, A/P/Q trend, MoM
-  change, component comparison, downtime trend, OEE-vs-downtime, downtime
-  donut).
-
-## Architecture for the backend agent
-
-- `src/types` — all domain interfaces (`Plant`, `MonthlyOEEData`,
-  `DowntimeData`, `DowntimeCategory`, `PlantGroup`, ...).
-- `src/data` — static plant/group registry + deterministic mock data
-  generator (`mockOee.ts`).
-- `src/services` — **the integration seam**. `oeeService.ts`,
-  `downtimeService.ts`, `plantService.ts` currently read/write the in-memory
-  mock store. Every UI component calls these functions, never the mock data
-  directly — swap the function bodies for real API/database calls and the
-  UI keeps working unchanged.
-- `src/components/three` — reusable R3F primitives (factory geometry,
-  particle streams, A/P/Q rings, per-plant mechanical objects).
-- `src/components/charts` — Recharts wrappers themed for the dark
-  industrial UI.
-- `src/components/plant` — plant dashboard building blocks (hero, month
-  timeline, both entry forms, analytics composition).
-- `src/components/sections` — homepage scroll sections.
-
-## Notes
-
-- Mock data is deterministic (seeded, not `Math.random`) so SSR/CSR never
-  mismatch and reloads look stable.
-- `saveMonthlyOEE` / `saveDowntime` currently mutate the in-memory mock DB
-  for the session — ready to be pointed at a real persistence layer.
-- 3D scenes use primitive geometries (boxes, torus, icosahedron) rather than
-  external GLTF assets, so there are zero binary/model dependencies to host.
-- Tailwind v4 (`@import "tailwindcss"`) — no `tailwind.config.js` needed for
-  the base setup; theme tokens live in `globals.css`.
+*Designed and developed with caffeine and Next.js during an incredible internship experience at Ramco Steels Pvt. Ltd.* ⚙️
