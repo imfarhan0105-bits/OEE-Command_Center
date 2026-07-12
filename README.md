@@ -1,8 +1,8 @@
-# 🏭 OEE Command Center 
+# OEE Command Center 
 
 Hey there! Welcome to the **OEE Command Center** — a digital manufacturing observation system I built from the ground up during my internship at **Ramco Steels Pvt. Ltd.** 
 
-## 💡 The Story Behind the Project
+## The Story Behind the Project
 
 Before this project, tracking machine efficiency across multiple massive manufacturing sectors (like Sector 25, Sector 69, and various individual units) involved a lot of disconnected spreadsheets, delayed reporting, and manual data entry. It worked, but it wasn't *fast*, and it definitely wasn't easy to look at.
 
@@ -10,7 +10,7 @@ I was tasked with solving this problem. The goal? Build a centralized digital ne
 
 The result is this application. It completely digitizes the tracking of **Overall Equipment Effectiveness (OEE)** — which breaks down into Availability, Performance, and Quality. Instead of waiting for weekly Excel roll-ups, plant managers and executives can now log in and instantly see exactly how their CNC machines, VMC units, and massive Forging presses are performing in real-time.
 
-## 🚀 What Makes It Awesome?
+## What Makes It Awesome?
 
 I didn't just want to build another boring corporate dashboard with a white background and some bar charts. I wanted it to feel like you were stepping into a mission control room. 
 
@@ -23,7 +23,7 @@ It solves the very real industrial problem of data visibility, and it does it wi
 
 ---
 
-## 🛠️ How to Set It Up
+## How to Set It Up
 
 If you're a developer looking to run this locally, here is exactly how to get it spinning on your own machine.
 
@@ -67,4 +67,4 @@ npx tsx scripts/seedFirestore.ts
 
 ---
 
-*Designed and developed with caffeine and Next.js during an incredible internship experience at Ramco Steels Pvt. Ltd.* ⚙️
+*Designed and developed with caffeine and Next.js during an incredible internship experience at Ramco Steels Pvt. Ltd.*
