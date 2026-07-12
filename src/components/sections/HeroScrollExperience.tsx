@@ -44,7 +44,6 @@ export default function HeroScrollExperience({ companyOee = 0 }: { companyOee?: 
         <div className="pointer-events-none absolute inset-0 grid-overlay opacity-30" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70" />
 
-        {/* SCENE 1 TEXT */}
         <SceneText active={progress < 0.18} localProgress={progress / 0.18} startVisible>
           <h1 className="font-display mt-4 text-5xl font-semibold tracking-tight text-[#f1f3f5] sm:text-7xl">
             OEE COMMAND CENTER
@@ -54,7 +53,6 @@ export default function HeroScrollExperience({ companyOee = 0 }: { companyOee?: 
           </p>
         </SceneText>
 
-        {/* SCENE 2 TEXT — A x P x Q */}
         <SceneText active={progress >= 0.18 && progress < 0.38} localProgress={(progress - 0.18) / 0.2}>
           <div className="flex items-center gap-4 font-display text-3xl font-semibold text-[#c7ccd4] sm:text-5xl">
             <span className="text-[#3ddc84]">A</span>
@@ -73,7 +71,6 @@ export default function HeroScrollExperience({ companyOee = 0 }: { companyOee?: 
           <p className="font-mono-industrial mt-2 text-xs tracking-[0.3em] text-[#4fd1ff]">COMPANY-WIDE OEE</p>
         </SceneText>
 
-        {/* SCENE 3 TEXT — list of all plant categories */}
         <SceneText active={progress >= 0.38 && progress < 0.62} localProgress={(progress - 0.38) / 0.24}>
           <p className="font-mono-industrial text-xs tracking-[0.4em] text-[#4fd1ff]">INDUSTRIAL NODES</p>
           <div className="mt-6 grid grid-cols-2 gap-10 sm:grid-cols-5 text-center">
@@ -100,7 +97,6 @@ export default function HeroScrollExperience({ companyOee = 0 }: { companyOee?: 
           </div>
         </SceneText>
 
-        {/* Scroll cue */}
         {progress < 0.05 && (
           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
             <div className="h-9 w-5 rounded-full border border-white/20 p-1">

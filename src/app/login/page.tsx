@@ -17,7 +17,7 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[var(--industrial-bg)] relative overflow-hidden">
-      {/* Background decorations */}
+      
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,rgba(79,209,255,0.05)_0%,transparent_70%)]" />
       <div className="absolute top-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--accent-cyan)]/30 to-transparent" />
       

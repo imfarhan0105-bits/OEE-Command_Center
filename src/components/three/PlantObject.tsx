@@ -20,7 +20,6 @@ const KIND_COLOR: Record<PlantKind, string> = {
   mechanical: "#64748b",
 };
 
-// Reusable material props for consistency
 const BASE_IRON_PROPS = { color: "#2d3748", metalness: 0.85, roughness: 0.55 };
 const MACHINED_STEEL_PROPS = { color: "#94a3b8", metalness: 0.95, roughness: 0.25 };
 const POLISHED_STEEL_PROPS = { color: "#f8fafc", metalness: 1.0, roughness: 0.08, clearcoat: 0.8, clearcoatRoughness: 0.1 };
@@ -31,29 +30,29 @@ function ForgingObject({ color }: { color: string }) {
   
   useFrame(({ clock }) => {
     if (hammerRef.current) {
-      // Piston striking motion
+
       hammerRef.current.position.y = Math.abs(Math.sin(clock.elapsedTime * 4)) * 0.8 + 0.5;
     }
   });
 
   return (
     <group>
-      {/* Base anvil */}
+      
       <mesh castShadow receiveShadow position={[0, -1, 0]}>
         <cylinderGeometry args={[1.5, 1.6, 1, 12]} />
         <meshStandardMaterial {...BASE_IRON_PROPS} />
       </mesh>
-      {/* Glowing hot metal */}
+      
       <mesh position={[0, -0.4, 0]}>
         <cylinderGeometry args={[0.6, 0.6, 0.2, 16]} />
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2} />
       </mesh>
-      {/* Moving hammer */}
+      
       <mesh ref={hammerRef} castShadow>
         <cylinderGeometry args={[1.2, 1.2, 1.5, 12]} />
         <meshPhysicalMaterial {...POLISHED_STEEL_PROPS} />
       </mesh>
-      {/* Framework */}
+      
       <mesh position={[0, 1.5, 0]}>
         <boxGeometry args={[4, 0.4, 1.5]} />
         <meshStandardMaterial {...BASE_IRON_PROPS} />
@@ -73,84 +72,79 @@ function CNCObject({ color }: { color: string }) {
 
   return (
     <group>
-      {/* 1. Base / Coolant Tank Area */}
+      
       <mesh castShadow receiveShadow position={[0, -1.2, 0]}>
         <boxGeometry args={[4.2, 0.8, 2.6]} />
         <meshStandardMaterial color="#1e293b" metalness={0.6} roughness={0.7} />
       </mesh>
 
-      {/* 2. Main Enclosure (White/Light Gray) */}
       <group position={[0, 0.4, -0.2]}>
-        {/* Back Wall */}
+        
         <mesh receiveShadow position={[0, 0, -1.1]}>
           <boxGeometry args={[4.2, 2.4, 0.2]} />
           <meshStandardMaterial color="#e2e8f0" metalness={0.3} roughness={0.4} />
         </mesh>
-        {/* Left Wall */}
+        
         <mesh receiveShadow position={[-2.0, 0, 0]}>
           <boxGeometry args={[0.2, 2.4, 2.0]} />
           <meshStandardMaterial color="#e2e8f0" metalness={0.3} roughness={0.4} />
         </mesh>
-        {/* Right Wall */}
+        
         <mesh receiveShadow position={[2.0, 0, 0]}>
           <boxGeometry args={[0.2, 2.4, 2.0]} />
           <meshStandardMaterial color="#e2e8f0" metalness={0.3} roughness={0.4} />
         </mesh>
-        {/* Roof */}
+        
         <mesh receiveShadow position={[0, 1.1, 0]}>
           <boxGeometry args={[4.2, 0.2, 2.0]} />
           <meshStandardMaterial color="#e2e8f0" metalness={0.3} roughness={0.4} />
         </mesh>
       </group>
 
-      {/* 3. Internal Components (Darker, metallic) */}
       <group position={[0, 0, 0.2]}>
-        {/* Slant Bed (Angled 45 deg) */}
+        
         <mesh receiveShadow position={[0.2, -0.4, -0.4]} rotation={[Math.PI / 4, 0, 0]}>
           <boxGeometry args={[3.0, 1.4, 0.4]} />
           <meshStandardMaterial {...BASE_IRON_PROPS} />
         </mesh>
 
-        {/* Spindle Housing (Left) */}
         <mesh castShadow receiveShadow position={[-1.2, 0.1, -0.4]}>
           <boxGeometry args={[1.0, 1.2, 1.2]} />
           <meshStandardMaterial {...MACHINED_STEEL_PROPS} />
         </mesh>
 
-        {/* Rotating Chuck & Workpiece */}
         <group ref={spindleRef} position={[-0.6, 0.1, -0.4]} rotation={[0, 0, -Math.PI / 2]}>
-          {/* Main Chuck Body */}
+          
           <mesh castShadow>
             <cylinderGeometry args={[0.45, 0.45, 0.3, 24]} />
             <meshPhysicalMaterial {...POLISHED_STEEL_PROPS} />
           </mesh>
-          {/* 3 Jaws */}
+          
           {[0, (Math.PI * 2) / 3, (Math.PI * 4) / 3].map((angle, i) => (
             <mesh key={i} castShadow position={[Math.cos(angle) * 0.3, 0.2, Math.sin(angle) * 0.3]} rotation={[0, -angle, 0]}>
               <boxGeometry args={[0.15, 0.2, 0.3]} />
               <meshStandardMaterial {...MACHINED_STEEL_PROPS} />
             </mesh>
           ))}
-          {/* Workpiece */}
+          
           <mesh castShadow position={[0, 0.6, 0]}>
             <cylinderGeometry args={[0.15, 0.15, 1.2, 16]} />
             <meshStandardMaterial color={color} metalness={1.0} roughness={0.2} emissive={color} emissiveIntensity={0.2} />
           </mesh>
         </group>
 
-        {/* Tool Turret (Right Side, mounted on slant bed) */}
         <group position={[0.8, -0.1, 0.1]} rotation={[Math.PI / 6, 0, 0]}>
-          {/* Cross Slide */}
+          
           <mesh castShadow position={[0, -0.3, -0.2]}>
             <boxGeometry args={[0.8, 0.2, 1.0]} />
             <meshStandardMaterial {...MACHINED_STEEL_PROPS} />
           </mesh>
-          {/* Turret Body */}
+          
           <mesh castShadow position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.35, 0.35, 0.4, 8]} />
             <meshStandardMaterial {...MACHINED_STEEL_PROPS} />
           </mesh>
-          {/* Tools sticking out */}
+          
           <mesh castShadow position={[-0.4, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
              <cylinderGeometry args={[0.05, 0.05, 0.4, 8]} />
              <meshStandardMaterial {...BRASS_MAT_PROPS} />
@@ -158,28 +152,26 @@ function CNCObject({ color }: { color: string }) {
         </group>
       </group>
 
-      {/* 4. Front Sliding Doors */}
       <group position={[0, 0.3, 0.9]}>
-        {/* Left Door (Stationary) */}
+        
         <group position={[-1.0, 0, 0]}>
-          {/* Frame */}
+          
           <mesh>
             <boxGeometry args={[1.9, 1.8, 0.05]} />
             <meshStandardMaterial color="#475569" metalness={0.6} roughness={0.5} />
           </mesh>
-          {/* Window */}
+          
           <mesh position={[0, 0.1, 0.03]}>
             <boxGeometry args={[1.4, 1.2, 0.02]} />
             <meshPhysicalMaterial color="#020617" transmission={0.9} opacity={1} transparent metalness={0.1} roughness={0.1} />
           </mesh>
-          {/* Handle */}
+          
           <mesh position={[0.7, 0, 0.05]}>
             <boxGeometry args={[0.05, 0.4, 0.1]} />
             <meshPhysicalMaterial {...POLISHED_STEEL_PROPS} />
           </mesh>
         </group>
 
-        {/* Right Door (Slid slightly open) */}
         <group position={[0.8, 0, 0.06]}>
           <mesh>
             <boxGeometry args={[1.9, 1.8, 0.05]} />
@@ -196,26 +188,24 @@ function CNCObject({ color }: { color: string }) {
         </group>
       </group>
 
-      {/* 5. Control Panel (Mounted on an arm to the right) */}
       <group position={[2.4, 0.5, 1.0]}>
-        {/* Arm */}
+        
         <mesh position={[-0.2, 0, -0.4]} rotation={[0, -Math.PI / 4, 0]}>
            <cylinderGeometry args={[0.06, 0.06, 0.8]} />
            <meshStandardMaterial {...MACHINED_STEEL_PROPS} />
         </mesh>
-        
-        {/* Panel Housing */}
+
         <group rotation={[-Math.PI / 6, -Math.PI / 6, 0]}>
           <mesh castShadow>
             <boxGeometry args={[0.8, 1.0, 0.1]} />
             <meshStandardMaterial color="#1e293b" metalness={0.4} roughness={0.6} />
           </mesh>
-          {/* Screen */}
+          
           <mesh position={[0, 0.2, 0.06]}>
             <planeGeometry args={[0.6, 0.5]} />
             <meshStandardMaterial color="#0ea5e9" emissive="#0ea5e9" emissiveIntensity={0.6} />
           </mesh>
-          {/* CNC Keyboard (Green/Red Buttons) */}
+          
           <mesh position={[-0.2, -0.3, 0.06]}>
             <boxGeometry args={[0.15, 0.15, 0.02]} />
             <meshStandardMaterial color="#22c55e" />
@@ -224,7 +214,7 @@ function CNCObject({ color }: { color: string }) {
              <boxGeometry args={[0.15, 0.15, 0.02]} />
              <meshStandardMaterial color="#ef4444" />
           </mesh>
-          {/* MPG Handwheel (Classic CNC dial) */}
+          
           <mesh position={[0, -0.3, 0.08]} rotation={[Math.PI / 2, 0, 0]}>
              <cylinderGeometry args={[0.1, 0.1, 0.04, 16]} />
              <meshPhysicalMaterial {...POLISHED_STEEL_PROPS} />
@@ -232,20 +222,19 @@ function CNCObject({ color }: { color: string }) {
         </group>
       </group>
 
-      {/* 6. Status Light Tower (Andon) */}
       <group position={[-1.7, 1.9, -0.8]}>
         <mesh position={[0, 0, 0]}>
           <cylinderGeometry args={[0.03, 0.03, 0.6, 8]} />
           <meshStandardMaterial {...MACHINED_STEEL_PROPS} />
         </mesh>
-        {/* Lights */}
+        
         {["#22c55e", "#eab308", "#ef4444"].map((c, i) => (
           <mesh key={i} position={[0, 0.3 + i * 0.15, 0]}>
             <cylinderGeometry args={[0.06, 0.06, 0.12, 16]} />
             <meshStandardMaterial color={c} emissive={c} emissiveIntensity={i === 0 ? 1.5 : 0.1} />
           </mesh>
         ))}
-        {/* Top Cap */}
+        
         <mesh position={[0, 0.75, 0]}>
            <cylinderGeometry args={[0.06, 0.06, 0.02, 16]} />
            <meshStandardMaterial {...MACHINED_STEEL_PROPS} />
@@ -260,42 +249,38 @@ function VMCObject({ color }: { color: string }) {
   
   useFrame(({ clock }) => {
     if (toolRef.current) {
-      // Milling tool rotation and contouring path
+
       toolRef.current.rotation.y = clock.elapsedTime * 20;
       toolRef.current.position.x = Math.sin(clock.elapsedTime * 2) * 0.4;
-      // Keep Z movement tight so it doesn't clip into the back column
+
       toolRef.current.position.z = Math.cos(clock.elapsedTime * 2) * 0.2;
     }
   });
 
   return (
     <group>
-      {/* Machine Bed with T-slots representation */}
+      
       <mesh castShadow receiveShadow position={[0, -1.2, 0]}>
         <boxGeometry args={[3, 0.6, 2]} />
         <meshStandardMaterial {...BASE_IRON_PROPS} />
       </mesh>
-      
-      {/* Workpiece */}
+
       <mesh castShadow position={[0, -0.8, 0]}>
         <boxGeometry args={[1.5, 0.4, 1.2]} />
         <meshStandardMaterial color={color} metalness={0.8} roughness={0.3} emissive={color} emissiveIntensity={0.1} />
       </mesh>
 
-      {/* Z-Axis Column */}
       <mesh castShadow position={[0, 0.5, -0.8]}>
         <boxGeometry args={[1.2, 3, 0.8]} />
         <meshStandardMaterial {...MACHINED_STEEL_PROPS} />
       </mesh>
 
-      {/* X/Y Spindle Head assembly */}
       <group position={[0, 0.8, 0]}>
         <mesh castShadow position={[0, 0.5, 0]}>
           <boxGeometry args={[1, 1, 1.2]} />
           <meshStandardMaterial {...MACHINED_STEEL_PROPS} />
         </mesh>
-        
-        {/* Rotating Tool */}
+
         <group ref={toolRef} position={[0, 0, 0]}>
           <mesh castShadow position={[0, -0.2, 0]}>
             <cylinderGeometry args={[0.2, 0.1, 0.4, 12]} />
@@ -347,8 +332,7 @@ export default function PlantObject({ kind }: PlantObjectProps) {
 
   useFrame(({ clock }) => {
     if (!group.current) return;
-    // Gentle back-and-forth oscillation (approx +/- 25 degrees)
-    // so the face of the machine is always visible.
+
     group.current.rotation.y = Math.sin(clock.elapsedTime * 0.5) * 0.4;
   });
 

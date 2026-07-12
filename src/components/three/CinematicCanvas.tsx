@@ -16,9 +16,6 @@ function CameraRig({ progressRef }: { progressRef: React.MutableRefObject<number
   useFrame(({ camera }) => {
     const p = progressRef.current;
 
-    // Scene 1 (0 - 0.18): travel through factory architecture
-    // Scene 2 (0.18 - 0.38): arrive at APQ rings
-    // Scene 3+ (0.38 - 1): pull back / drift
     let targetPos = new THREE.Vector3(0, 1.4, 14);
     let targetLook = new THREE.Vector3(0, 0, 0);
 

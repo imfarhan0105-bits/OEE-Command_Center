@@ -45,8 +45,7 @@ export default function PlantsGridSection() {
                   {plant.group === "sector-25" ? "SECTOR 25" : plant.group === "sector-69" ? "SECTOR 69" : "INDIVIDUAL UNIT"}
                 </p>
                 <h3 className="font-display mt-2 text-2xl font-semibold text-[var(--steel-light)] relative z-10">{plant.name}</h3>
-                
-                {/* 3D MECHANICAL VISUALIZATION */}
+
                 <div className="relative z-0 mt-4 h-32 w-full overflow-visible opacity-60 transition-opacity duration-300 group-hover:opacity-100">
                   <PlantHero3D kind={plant.kind} />
                 </div>

@@ -71,8 +71,7 @@ export async function updateDowntimeEntries({
   entries: { categoryId: string; minutes: number }[];
 }) {
   const id = `${plantSlug}_${year}_${month}`;
-  
-  // Delete all old entries for this month
+
   const q = query(collection(db, "downtime_entries"), where("monthlyOeeId", "==", id));
   const oldSnap = await getDocs(q);
   
@@ -80,8 +79,7 @@ export async function updateDowntimeEntries({
   for (const oldDoc of oldSnap.docs) {
     batch.delete(oldDoc.ref);
   }
-  
-  // Add new entries
+
   for (const entry of entries) {
     if (entry.minutes > 0) {
       const entryRef = doc(collection(db, "downtime_entries"), `${id}_${entry.categoryId}`);
@@ -103,8 +101,7 @@ export async function getDowntimeEntriesForMonth(plantSlug: string, year: number
   const id = `${plantSlug}_${year}_${month}`;
   const q = query(collection(db, "downtime_entries"), where("monthlyOeeId", "==", id));
   const snap = await getDocs(q);
-  
-  // also fetch categories to join names
+
   const catSnap = await getDocs(collection(db, "downtime_categories"));
   const catMap = new Map();
   for (const doc of catSnap.docs) {

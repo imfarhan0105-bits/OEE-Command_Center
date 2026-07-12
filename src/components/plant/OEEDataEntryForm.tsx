@@ -70,7 +70,6 @@ export default function OEEDataEntryForm({ plantSlug, year, month, onSaved }: OE
         <InputSlider label="QUALITY" color="#4fd1ff" value={quality} onChange={setQuality} />
       </div>
 
-      {/* Live OEE equation */}
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4 border-y border-white/[0.06] py-8 font-display text-2xl text-[#c7ccd4] sm:text-4xl">
         <EquationValue value={availability} color="#3ddc84" />
         <span className="text-[#5b6270]">×</span>

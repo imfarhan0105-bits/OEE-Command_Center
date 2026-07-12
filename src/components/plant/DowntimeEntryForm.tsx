@@ -80,11 +80,10 @@ export default function DowntimeEntryForm({ plantSlug, year, month, onSaved }: D
     try {
       const cleaned = categories.filter((c) => c.name.trim().length > 0);
 
-      // Ensure all named categories exist in DB
       const resolvedCategories: { id: string; name: string; minutes: number }[] = [];
       for (const cat of cleaned) {
         if (cat.isNew) {
-          // Create in DB and find its id
+
           const colorIdx = cleaned.indexOf(cat) % DEFAULT_CATEGORY_COLORS.length;
           const newId = await upsertDowntimeCategory({ name: cat.name, color: DEFAULT_CATEGORY_COLORS[colorIdx] });
           resolvedCategories.push({ id: newId, name: cat.name, minutes: cat.minutes });
@@ -101,7 +100,6 @@ export default function DowntimeEntryForm({ plantSlug, year, month, onSaved }: D
         entries: resolvedCategories.map((c) => ({ categoryId: c.id, minutes: c.minutes })),
       });
 
-      // Remove completely empty categories from the UI
       if (cleaned.length !== categories.length) {
         setCategories(cleaned.length > 0 ? cleaned : [newLocalCategory()]);
       }
@@ -131,7 +129,6 @@ export default function DowntimeEntryForm({ plantSlug, year, month, onSaved }: D
         </div>
       </div>
 
-      {/* Existing DB categories quick-add */}
       {dbCategories.length > 0 && (
         <div className="mb-4 flex flex-wrap gap-2">
           {dbCategories

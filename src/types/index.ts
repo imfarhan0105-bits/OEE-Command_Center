@@ -1,10 +1,4 @@
-// ============================================================================
-// CORE DOMAIN TYPES — OEE COMMAND CENTER
-// These interfaces define the contract between frontend and the future
-// backend. All services should consume/return these shapes so a backend
-// agent can swap mock implementations for real API calls without touching
-// any UI component.
-// ============================================================================
+
 
 export type PlantSlug =
   | "sector-25-forging"

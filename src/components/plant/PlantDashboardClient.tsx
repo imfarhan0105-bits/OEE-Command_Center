@@ -64,7 +64,7 @@ export default function PlantDashboardClient({ plant }: { plant: Plant }) {
 
   return (
     <main className="bg-[var(--industrial-bg)] pt-20">
-      {/* HERO */}
+      
       <section className="relative flex min-h-[80vh] items-center overflow-hidden border-b border-[var(--industrial-line)] px-6 lg:px-10">
         <div className="absolute inset-0 grid-overlay opacity-50" />
         <div className="absolute right-0 top-0 h-full w-full sm:w-1/2">
@@ -93,14 +93,12 @@ export default function PlantDashboardClient({ plant }: { plant: Plant }) {
         </div>
       </section>
 
-      {/* MONTH SELECTOR */}
       <section className="border-b border-[var(--industrial-line)] px-6 py-8 lg:px-10">
         <div className="mx-auto max-w-[1400px]">
           <MonthTimeline year={year} month={month} availableMonths={AVAILABLE_MONTHS} onChange={handleMonthChange} />
         </div>
       </section>
 
-      {/* DATA ENTRY */}
       <section className="border-b border-[var(--industrial-line)] px-6 py-20 lg:px-10">
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-8 lg:grid-cols-2">
           <OEEDataEntryForm plantSlug={plant.slug} year={year} month={month} onSaved={handleSaved} />
@@ -111,7 +109,6 @@ export default function PlantDashboardClient({ plant }: { plant: Plant }) {
         </p>
       </section>
 
-      {/* ANALYTICS */}
       {!loading && (trend.length > 0 || downtimeSeries.length > 0) && (
         <section className="px-6 py-20 lg:px-10">
           <div className="mx-auto max-w-[1400px]">

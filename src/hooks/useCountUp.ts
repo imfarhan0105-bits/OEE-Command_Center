@@ -24,7 +24,7 @@ export function useCountUp(target: number, duration = 1200, decimals = 1): numbe
 
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [target, duration, decimals]);
 
   return value;

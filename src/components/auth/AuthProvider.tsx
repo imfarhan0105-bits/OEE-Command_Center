@@ -47,13 +47,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser && firebaseUser.email) {
         const email = firebaseUser.email.toLowerCase();
-        
-        // Check Access
+
         if (email.endsWith("@ramcosteels.com") || EDITORS.includes(email)) {
           setUser(firebaseUser);
           setRole(EDITORS.includes(email) ? "editor" : "viewer");
         } else {
-          // Unauthorized email, log them out immediately
+
           signOut(auth);
           setUser(null);
           setRole(null);

@@ -11,7 +11,6 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
 };
 
-// Only initialize Firebase if we have the config
 const app = firebaseConfig.apiKey 
   ? (!getApps().length ? initializeApp(firebaseConfig) : getApp())
   : ({} as any);

@@ -2,8 +2,6 @@ import { DowntimeCategory, DowntimeData, MonthlyOEEData, PlantSlug } from "@/typ
 import { calculateOEE } from "@/lib/oee";
 import { PLANTS } from "./plants";
 
-// Simple deterministic pseudo-random generator so mock data is stable across
-// reloads (no Math.random hydration mismatches in Next.js SSR).
 function seededRandom(seed: number): number {
   const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);

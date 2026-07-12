@@ -22,7 +22,7 @@ export default function ComparisonSection() {
   useEffect(() => {
     getAllPlantsLatestOEE()
       .then((d) => {
-        // Map to match PlantComparisonData
+
         const formatted = d.map(r => ({
           slug: r.slug,
           name: r.slug.toUpperCase(),
@@ -40,7 +40,6 @@ export default function ComparisonSection() {
 
   if (!data.length) return null;
 
-  // Sort by OEE descending
   const sortedByOee = [...data].sort((a, b) => b.oee - a.oee);
   const sortedByDowntime = [...data].sort((a, b) => b.downtime - a.downtime);
 

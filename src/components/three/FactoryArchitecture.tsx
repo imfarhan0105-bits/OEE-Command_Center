@@ -78,7 +78,7 @@ export default function FactoryArchitecture({ intensity = 0.4 }: FactoryArchitec
 
   return (
     <group ref={group}>
-      {/* Ground plane */}
+      
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]} receiveShadow>
         <planeGeometry args={[60, 60]} />
         <meshStandardMaterial color="#0a0b0d" metalness={0.6} roughness={0.8} />

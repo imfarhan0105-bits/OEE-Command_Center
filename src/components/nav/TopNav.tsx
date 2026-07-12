@@ -18,7 +18,6 @@ const LINKS = [
   { href: "/#analytics", label: "ANALYTICS" },
 ];
 
-
 export default function TopNav() {
   const [switcherOpen, setSwitcherOpen] = useState(false);
 
