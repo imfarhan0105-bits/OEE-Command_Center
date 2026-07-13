@@ -22,9 +22,9 @@ function LogoMesh() {
   );
 }
 
-export default function Logo3D() {
+export default function Logo3D({ className }: { className?: string }) {
   return (
-    <div className="h-12 w-32 md:w-40 flex-shrink-0 flex items-center justify-start overflow-visible">
+    <div className={className || "h-12 w-32 md:w-40 flex-shrink-0 flex items-center justify-start overflow-visible"}>
       <Canvas camera={{ position: [0, 0, 3], fov: 40 }} style={{ width: '100%', height: '100%' }}>
         <React.Suspense fallback={null}>
           <LogoMesh />

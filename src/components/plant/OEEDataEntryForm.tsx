@@ -15,9 +15,9 @@ interface OEEDataEntryFormProps {
 import { getMonthlyOEEFor } from "@/services/oeeService";
 
 export default function OEEDataEntryForm({ plantSlug, year, month, onSaved }: OEEDataEntryFormProps) {
-  const [availability, setAvailability] = useState(90);
-  const [performance, setPerformance] = useState(88);
-  const [quality, setQuality] = useState(97);
+  const [availability, setAvailability] = useState<number | string>(90);
+  const [performance, setPerformance] = useState<number | string>(88);
+  const [quality, setQuality] = useState<number | string>(97);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,13 +38,13 @@ export default function OEEDataEntryForm({ plantSlug, year, month, onSaved }: OE
       .catch(console.error);
   }, [plantSlug, year, month]);
 
-  const oee = calculateOEE(availability, performance, quality);
+  const oee = calculateOEE(Number(availability) || 0, Number(performance) || 0, Number(quality) || 0);
 
   async function handleSave() {
     setSaving(true);
     setError(null);
     try {
-      await upsertMonthlyOEE({ plantSlug, year, month, availability, performance, quality });
+      await upsertMonthlyOEE({ plantSlug, year, month, availability: Number(availability) || 0, performance: Number(performance) || 0, quality: Number(quality) || 0 });
       setSaved(true);
       onSaved?.();
       setTimeout(() => setSaved(false), 2500);
@@ -106,10 +106,10 @@ export default function OEEDataEntryForm({ plantSlug, year, month, onSaved }: OE
   );
 }
 
-function EquationValue({ value, color }: { value: number; color: string }) {
+function EquationValue({ value, color }: { value: number | string; color: string }) {
   return (
     <span style={{ color }}>
-      {value.toFixed(1)}
+      {(Number(value) || 0).toFixed(1)}
       <span className="text-lg opacity-60">%</span>
     </span>
   );
@@ -123,15 +123,16 @@ function InputSlider({
 }: {
   label: string;
   color: string;
-  value: number;
-  onChange: (v: number) => void;
+  value: number | string;
+  onChange: (v: number | string) => void;
 }) {
+  const numValue = Number(value) || 0;
   return (
     <div className="rounded-md border border-white/[0.06] bg-white/[0.02] p-5">
       <div className="mb-3 flex items-center justify-between">
         <span className="font-mono-industrial text-[10px] tracking-[0.2em] text-[#5b6270]">{label}</span>
         <span className="font-display text-lg font-medium" style={{ color }}>
-          {value.toFixed(1)}%
+          {numValue.toFixed(1)}%
         </span>
       </div>
       <input
@@ -139,7 +140,7 @@ function InputSlider({
         min={0}
         max={100}
         step={0.1}
-        value={value}
+        value={numValue}
         onChange={(e) => onChange(parseFloat(e.target.value))}
         className="w-full"
         style={{ accentColor: color }}
@@ -150,7 +151,17 @@ function InputSlider({
         max={100}
         step={0.1}
         value={value}
-        onChange={(e) => onChange(Math.max(0, Math.min(100, parseFloat(e.target.value) || 0)))}
+        onChange={(e) => {
+          let val = e.target.value;
+          if (val === "") {
+            onChange("");
+            return;
+          }
+          if (val.length > 1 && val.startsWith("0") && !val.startsWith("0.")) {
+            val = val.replace(/^0+/, "");
+          }
+          onChange(val);
+        }}
         className="mt-3 w-full rounded-sm border border-white/10 bg-black/30 px-3 py-1.5 font-mono-industrial text-sm text-[#c7ccd4] outline-none focus:border-[#4fd1ff]/50"
       />
     </div>

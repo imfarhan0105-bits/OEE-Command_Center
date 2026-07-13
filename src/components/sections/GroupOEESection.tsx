@@ -100,7 +100,7 @@ export default function GroupOEESection({
 
           <div className="glass-panel rounded-lg p-8">
             <p className="mb-4 font-mono-industrial text-[11px] tracking-[0.3em] text-[var(--steel)]">OEE MONTHLY TREND</p>
-            <OEETrendChart data={trend} color={accent} />
+            <OEETrendChart data={trend.slice(-6)} color={accent} />
           </div>
         </div>
       </div>

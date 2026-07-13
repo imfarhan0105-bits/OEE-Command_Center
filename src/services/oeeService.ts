@@ -4,7 +4,26 @@ import { AggregatedOEE, MonthlyOEEData, OEETrendPoint, PlantGroupSlug, PlantSlug
 import { monthLabel } from "@/lib/oee";
 
 export async function getAvailableMonths() {
-  return Array.from({ length: 6 }, (_, i) => ({ year: 2026, month: i + 1 }));
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+
+  const windowMonths = [];
+  for (let i = -4; i <= 1; i++) {
+    let y = currentYear;
+    let m = currentMonth + i;
+    if (m < 1) {
+      m += 12;
+      y -= 1;
+    } else if (m > 12) {
+      m -= 12;
+      y += 1;
+    }
+    if (y > 2026 || (y === 2026 && m >= 6)) {
+      windowMonths.push({ year: y, month: m });
+    }
+  }
+  return windowMonths;
 }
 
 export async function getMonthlyOEEData(plantSlug: PlantSlug): Promise<MonthlyOEEData[]> {

@@ -89,7 +89,7 @@ export const MOCK_DOWNTIME_DB: Record<PlantSlug, DowntimeData[]> = PLANTS.reduce
 
 export const AVAILABLE_MONTHS = (() => {
   const months: { year: number; month: number }[] = [];
-  for (let y = 2024; y <= 2030; y++) {
+  for (let y = 2026; y <= 2030; y++) {
     for (let m = 1; m <= 12; m++) {
       months.push({ year: y, month: m });
     }

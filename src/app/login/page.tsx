@@ -22,15 +22,15 @@ export default function LoginPage() {
       <div className="absolute top-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--accent-cyan)]/30 to-transparent" />
       
       <div className="z-10 flex flex-col items-center glass-panel p-12 rounded-xl max-w-md w-full border border-[var(--industrial-line)] shadow-2xl shadow-black/50">
-        <div className="mb-8 scale-150 transform">
-          <Logo3D />
+        <div className="mb-8 flex w-full justify-center">
+          <Logo3D className="h-32 w-64 md:h-48 md:w-80 flex items-center justify-center overflow-visible" />
         </div>
         
         <h1 className="font-display text-2xl text-[var(--steel-light)] font-semibold mb-2 text-center">
           OEE COMMAND CENTER
         </h1>
         <p className="font-mono-industrial text-xs tracking-[0.2em] text-[var(--steel)] text-center mb-10">
-          RESTRICTED DIGITAL TWIN ACCESS
+          RESTRICTED ACCESS
         </p>
         
         <button

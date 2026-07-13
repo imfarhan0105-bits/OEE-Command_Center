@@ -1,7 +1,7 @@
 "use client";
 
 import { OEETrendPoint, DowntimeData } from "@/types";
-import { compare } from "@/lib/oee";
+import { compare, monthLabel } from "@/lib/oee";
 import OEETrendChart from "@/components/charts/OEETrendChart";
 import APQTrendChart from "@/components/charts/APQTrendChart";
 import MoMChangeChart from "@/components/charts/MoMChangeChart";
@@ -23,13 +23,40 @@ export default function PlantAnalytics({ trend, downtimeSeries, currentDowntime 
   const avCmp = compare(latest.availability, prev.availability);
   const pfCmp = compare(latest.performance, prev.performance);
 
-  const combined = trend.map((t) => {
-    const dt = downtimeSeries.find((d) => d.year === t.year && d.month === t.month);
-    return { label: t.label, oee: t.oee, downtime: dt?.totalMinutes ?? 0 };
-  });
-
   const primaryDriver = Math.abs(avCmp.deltaAbsolute) >= Math.abs(pfCmp.deltaAbsolute) ? "AVAILABILITY" : "PERFORMANCE";
   const primaryDelta = primaryDriver === "AVAILABILITY" ? avCmp : pfCmp;
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+
+  const windowMonths = [];
+  for (let i = -4; i <= 1; i++) {
+    let y = currentYear;
+    let m = currentMonth + i;
+    if (m < 1) { m += 12; y -= 1; }
+    else if (m > 12) { m -= 12; y += 1; }
+    
+    if (y > 2026 || (y === 2026 && m >= 6)) {
+      windowMonths.push({ year: y, month: m, label: monthLabel(y, m) });
+    }
+  }
+
+  const displayTrend = windowMonths.map(wm => {
+    const existing = trend.find(t => t.year === wm.year && t.month === wm.month);
+    return existing || { year: wm.year, month: wm.month, label: wm.label, availability: 0, performance: 0, quality: 0, oee: 0 };
+  });
+
+  const displayDowntime = windowMonths.map(wm => {
+    const existing = downtimeSeries.find(d => d.year === wm.year && d.month === wm.month);
+    return existing || { plantSlug: "", year: wm.year, month: wm.month, totalMinutes: 0, categories: [] };
+  });
+
+  const displayCombined = windowMonths.map(wm => {
+    const t = displayTrend.find(dt => dt.year === wm.year && dt.month === wm.month)!;
+    const d = displayDowntime.find(dd => dd.year === wm.year && dd.month === wm.month)!;
+    return { label: wm.label, oee: t.oee, downtime: d.totalMinutes };
+  });
 
   return (
     <div className="space-y-16">
@@ -37,16 +64,16 @@ export default function PlantAnalytics({ trend, downtimeSeries, currentDowntime 
         <SectionLabel>PLANT OEE ANALYTICS</SectionLabel>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <ChartCard title="MONTHLY OEE TREND">
-            <OEETrendChart data={trend} color="#4fd1ff" />
+            <OEETrendChart data={displayTrend} color="#4fd1ff" />
           </ChartCard>
           <ChartCard title="A / P / Q TREND">
-            <APQTrendChart data={trend} />
+            <APQTrendChart data={displayTrend} />
           </ChartCard>
           <ChartCard title="MONTH-OVER-MONTH OEE CHANGE">
-            <MoMChangeChart data={trend} />
+            <MoMChangeChart data={displayTrend} />
           </ChartCard>
           <ChartCard title="OEE COMPONENT COMPARISON">
-            <ComponentComparisonChart data={trend} />
+            <ComponentComparisonChart data={displayTrend} />
           </ChartCard>
         </div>
 
@@ -70,13 +97,13 @@ export default function PlantAnalytics({ trend, downtimeSeries, currentDowntime 
         <SectionLabel accent="#ff4d4d">DOWNTIME ANALYTICS</SectionLabel>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <ChartCard title="MONTHLY DOWNTIME TREND">
-            <DowntimeMini data={downtimeSeries} />
+            <DowntimeMini data={displayDowntime} />
           </ChartCard>
           <ChartCard title="OEE VS DOWNTIME">
-            <OEEvsDowntimeChart data={combined} />
+            <OEEvsDowntimeChart data={displayCombined} />
           </ChartCard>
           <ChartCard title="MONTH-OVER-MONTH DOWNTIME CHANGE">
-            <DowntimeMoMMini data={downtimeSeries} />
+            <DowntimeMoMMini data={displayDowntime} />
           </ChartCard>
           <ChartCard title="DOWNTIME CONSTITUTION">
             {currentDowntime?.categories.length ? (

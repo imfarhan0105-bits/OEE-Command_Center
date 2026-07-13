@@ -48,9 +48,10 @@ export default function PlantDashboardClient({ plant }: { plant: Plant }) {
     reload();
   }, [reload, refreshKey]);
 
-  const latest = trend[trend.length - 1];
-  const prev = trend[trend.length - 2];
-  const cmp = latest && prev ? compare(latest.oee, prev.oee) : undefined;
+  const selectedTrendIndex = trend.findIndex(t => t.year === year && t.month === month);
+  const selectedStat = selectedTrendIndex >= 0 ? trend[selectedTrendIndex] : undefined;
+  const prevStat = selectedTrendIndex > 0 ? trend[selectedTrendIndex - 1] : undefined;
+  const cmp = selectedStat && prevStat ? compare(selectedStat.oee, prevStat.oee) : undefined;
   const currentDowntime = downtimeSeries.find((d) => d.year === year && d.month === month);
 
   function handleMonthChange(y: number, m: number) {
@@ -80,9 +81,9 @@ export default function PlantDashboardClient({ plant }: { plant: Plant }) {
 
           {loading ? (
             <div className="mt-12 font-mono-industrial text-xs text-[var(--steel)] tracking-[0.2em]">LOADING DATA...</div>
-          ) : latest ? (
+          ) : selectedStat ? (
             <div className="mt-12">
-              <BigStat label={`CURRENT MONTH — ${latest.label.toUpperCase()}`} value={latest.oee} comparison={cmp} />
+              <BigStat label="RECORDED OEE PERFORMANCE" value={selectedStat.oee} comparison={cmp} />
             </div>
           ) : (
             <div className="mt-12 rounded-md border border-[var(--accent-cyan)]/20 bg-[var(--accent-cyan)]/5 px-6 py-4">
@@ -105,7 +106,7 @@ export default function PlantDashboardClient({ plant }: { plant: Plant }) {
           <DowntimeEntryForm plantSlug={plant.slug} year={year} month={month} onSaved={handleSaved} />
         </div>
         <p className="mx-auto mt-4 max-w-[1400px] font-mono-industrial text-[10px] text-[var(--steel)]">
-          Editing {monthLabel(year, month)} — data is stored permanently in the local database.
+          Editing {monthLabel(year, month)} — data is stored permanently in the database.
         </p>
       </section>
 

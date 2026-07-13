@@ -26,35 +26,49 @@ const POLISHED_STEEL_PROPS = { color: "#f8fafc", metalness: 1.0, roughness: 0.08
 const BRASS_MAT_PROPS = { color: "#fbbf24", metalness: 1.0, roughness: 0.2 };
 
 function ForgingObject({ color }: { color: string }) {
-  const hammerRef = useRef<THREE.Mesh>(null);
+  const hammerRef = useRef<THREE.Group>(null);
   
   useFrame(({ clock }) => {
     if (hammerRef.current) {
-
-      hammerRef.current.position.y = Math.abs(Math.sin(clock.elapsedTime * 4)) * 0.8 + 0.5;
+      hammerRef.current.position.y = Math.abs(Math.sin(clock.elapsedTime * 4)) * 0.8 + 0.3;
     }
   });
 
   return (
-    <group>
+    <group scale={0.7} position={[0, -0.5, 0]}>
       
       <mesh castShadow receiveShadow position={[0, -1, 0]}>
-        <cylinderGeometry args={[1.5, 1.6, 1, 12]} />
+        <cylinderGeometry args={[1.8, 2.0, 1, 16]} />
         <meshStandardMaterial {...BASE_IRON_PROPS} />
       </mesh>
       
       <mesh position={[0, -0.4, 0]}>
-        <cylinderGeometry args={[0.6, 0.6, 0.2, 16]} />
+        <cylinderGeometry args={[0.8, 0.8, 0.2, 16]} />
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2} />
       </mesh>
       
-      <mesh ref={hammerRef} castShadow>
-        <cylinderGeometry args={[1.2, 1.2, 1.5, 12]} />
-        <meshPhysicalMaterial {...POLISHED_STEEL_PROPS} />
-      </mesh>
+      <group ref={hammerRef}>
+        <mesh castShadow>
+          <cylinderGeometry args={[1.2, 1.2, 1.5, 16]} />
+          <meshPhysicalMaterial color="#0a0a0a" metalness={0.9} roughness={0.15} clearcoat={1.0} clearcoatRoughness={0.1} />
+        </mesh>
+        <mesh castShadow position={[0, 1.55, 0]}>
+          <cylinderGeometry args={[0.4, 0.4, 1.6, 12]} />
+          <meshStandardMaterial {...MACHINED_STEEL_PROPS} />
+        </mesh>
+      </group>
       
-      <mesh position={[0, 1.5, 0]}>
-        <boxGeometry args={[4, 0.4, 1.5]} />
+      <mesh castShadow receiveShadow position={[-1.8, 1.0, 0]}>
+        <cylinderGeometry args={[0.4, 0.4, 4.0, 12]} />
+        <meshStandardMaterial {...BASE_IRON_PROPS} />
+      </mesh>
+      <mesh castShadow receiveShadow position={[1.8, 1.0, 0]}>
+        <cylinderGeometry args={[0.4, 0.4, 4.0, 12]} />
+        <meshStandardMaterial {...BASE_IRON_PROPS} />
+      </mesh>
+
+      <mesh position={[0, 3.0, 0]} castShadow>
+        <boxGeometry args={[4.6, 1.2, 1.6]} />
         <meshStandardMaterial {...BASE_IRON_PROPS} />
       </mesh>
     </group>
