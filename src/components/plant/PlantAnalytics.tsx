@@ -49,7 +49,7 @@ export default function PlantAnalytics({ trend, downtimeSeries, currentDowntime 
 
   const displayDowntime = windowMonths.map(wm => {
     const existing = downtimeSeries.find(d => d.year === wm.year && d.month === wm.month);
-    return existing || { plantSlug: "", year: wm.year, month: wm.month, totalMinutes: 0, categories: [] };
+    return existing || ({ plantSlug: "" as any, year: wm.year, month: wm.month, totalMinutes: 0, categories: [] } as DowntimeData);
   });
 
   const displayCombined = windowMonths.map(wm => {
