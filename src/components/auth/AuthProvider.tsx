@@ -12,6 +12,7 @@ interface AuthContextType {
   role: Role;
   loading: boolean;
   signIn: () => Promise<void>;
+  signInAsGuest: () => Promise<void>;
   logOut: () => Promise<void>;
 }
 
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextType>({
   role: null,
   loading: true,
   signIn: async () => { },
+  signInAsGuest: async () => { },
   logOut: async () => { },
 });
 
@@ -39,12 +41,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isConfigured = !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 
   useEffect(() => {
+    const isGuest = typeof window !== 'undefined' && sessionStorage.getItem("guestMode") === "true";
+
     if (!isConfigured) {
+      if (isGuest) {
+        setUser({ email: "guest@ramcosteels.com", uid: "guest-user" } as User);
+        setRole("viewer");
+      } else {
+        if (pathname !== "/login") {
+          router.push("/login");
+        }
+      }
       setLoading(false);
       return;
     }
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      const isGuest = typeof window !== 'undefined' && sessionStorage.getItem("guestMode") === "true";
+      
+      if (isGuest) {
+        setUser({ email: "guest@ramcosteels.com", uid: "guest-user" } as User);
+        setRole("viewer");
+        setLoading(false);
+        return;
+      }
+
       if (firebaseUser && firebaseUser.email) {
         const email = firebaseUser.email.toLowerCase();
 
@@ -79,25 +100,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInAsGuest = async () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem("guestMode", "true");
+    }
+    setUser({ email: "guest@ramcosteels.com", uid: "guest-user" } as User);
+    setRole("viewer");
+    router.push("/");
+  };
+
   const logOut = async () => {
-    if (!isConfigured) return;
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem("guestMode");
+    }
+    if (!isConfigured) {
+      setUser(null);
+      setRole(null);
+      router.push("/login");
+      return;
+    }
     await signOut(auth);
   };
 
-  if (!isConfigured) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--industrial-bg)] text-[var(--steel-light)] p-6 text-center">
-        <h1 className="font-display text-3xl mb-4 text-[#ff4d4d]">FIREBASE KEYS MISSING</h1>
-        <p className="font-mono-industrial max-w-md text-sm leading-relaxed mb-6">
-          The application has been successfully migrated to Firebase, but it cannot connect to the database.
-          Please add your <span className="text-[var(--accent-cyan)]">NEXT_PUBLIC_FIREBASE_*</span> keys to a <span className="text-[var(--accent-cyan)]">.env.local</span> file in the root directory and restart the development server.
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <AuthContext.Provider value={{ user, role, loading, signIn, logOut }}>
+    <AuthContext.Provider value={{ user, role, loading, signIn, signInAsGuest, logOut }}>
       {children}
     </AuthContext.Provider>
   );
