@@ -7,7 +7,7 @@ import APQTrendChart from "@/components/charts/APQTrendChart";
 import MoMChangeChart from "@/components/charts/MoMChangeChart";
 import ComponentComparisonChart from "@/components/charts/ComponentComparisonChart";
 import DowntimePieChart from "@/components/charts/DowntimePieChart";
-import OEEvsDowntimeChart from "@/components/charts/OEEvsDowntimeChart";
+// import OEEvsDowntimeChart from "@/components/charts/OEEvsDowntimeChart";
 
 interface PlantAnalyticsProps {
   trend: OEETrendPoint[];
@@ -77,20 +77,6 @@ export default function PlantAnalytics({ trend, downtimeSeries, currentDowntime 
           </ChartCard>
         </div>
 
-        <div className="mt-6 glass-panel rounded-lg p-6">
-          <p className="font-mono-industrial text-[11px] tracking-[0.25em] text-[#4fd1ff]">
-            OEE {oeeCmp.direction === "up" ? "INCREASED" : oeeCmp.direction === "down" ? "DECREASED" : "STABLE"}{" "}
-            {Math.abs(oeeCmp.deltaAbsolute).toFixed(1)}% FROM {prev.label.toUpperCase()}
-          </p>
-          <p className="mt-2 text-sm text-[#8a929e]">
-            Primary driver: <span className="text-[#c7ccd4]">{primaryDriver}</span>{" "}
-            <span className={primaryDelta.direction === "up" ? "text-[#3ddc84]" : "text-[#ff4d4d]"}>
-              {primaryDelta.direction === "up" ? "+" : ""}
-              {primaryDelta.deltaAbsolute.toFixed(1)}%
-            </span>{" "}
-            · Quality remained relatively stable across the period.
-          </p>
-        </div>
       </div>
 
       <div>
@@ -99,12 +85,12 @@ export default function PlantAnalytics({ trend, downtimeSeries, currentDowntime 
           <ChartCard title="MONTHLY DOWNTIME TREND">
             <DowntimeMini data={displayDowntime} />
           </ChartCard>
-          <ChartCard title="OEE VS DOWNTIME">
+          {/* <ChartCard title="OEE VS DOWNTIME">
             <OEEvsDowntimeChart data={displayCombined} />
-          </ChartCard>
-          <ChartCard title="MONTH-OVER-MONTH DOWNTIME CHANGE">
+          </ChartCard> */}
+          {/* <ChartCard title="MONTH-OVER-MONTH DOWNTIME CHANGE">
             <DowntimeMoMMini data={displayDowntime} />
-          </ChartCard>
+          </ChartCard> */}
           <ChartCard title="DOWNTIME CONSTITUTION">
             {currentDowntime?.categories.length ? (
               <DowntimePieChart categories={currentDowntime.categories} />
@@ -120,7 +106,7 @@ export default function PlantAnalytics({ trend, downtimeSeries, currentDowntime 
 
 function SectionLabel({ children, accent = "#4fd1ff" }: { children: React.ReactNode; accent?: string }) {
   return (
-    <p className="mb-6 font-mono-industrial text-xs tracking-[0.3em]" style={{ color: accent }}>
+    <p className="mb-6 font-mono-industrial text-lg tracking-[0.2em]" style={{ color: accent }}>
       {children}
     </p>
   );
@@ -129,14 +115,14 @@ function SectionLabel({ children, accent = "#4fd1ff" }: { children: React.ReactN
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="glass-panel rounded-lg p-6">
-      <p className="mb-3 font-mono-industrial text-[10px] tracking-[0.25em] text-[#5b6270]">{title}</p>
+      <p className="mb-3 font-mono-industrial text-sm tracking-[0.15em] text-[var(--steel)]">{title}</p>
       {children}
     </div>
   );
 }
 
 function EmptyState({ label }: { label: string }) {
-  return <div className="flex h-[280px] items-center justify-center font-mono-industrial text-xs text-[#5b6270]">{label}</div>;
+  return <div className="flex h-[280px] items-center justify-center font-mono-industrial text-sm text-[var(--steel)]">{label}</div>;
 }
 
 function DowntimeMini({ data }: { data: DowntimeData[] }) {

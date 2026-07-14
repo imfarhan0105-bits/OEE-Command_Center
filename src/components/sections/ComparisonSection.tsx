@@ -16,27 +16,30 @@ interface PlantComparisonData {
 
 import { getAllPlantsLatestOEE } from "@/services/oeeService";
 
-export default function ComparisonSection() {
-  const [data, setData] = useState<PlantComparisonData[]>([]);
+type PlantRow = { slug: string; oee: number; availability: number; performance: number; quality: number; year: number; month: number };
+
+function toComparisonData(rows: PlantRow[]): PlantComparisonData[] {
+  return rows.map(r => ({
+    slug: r.slug,
+    name: r.slug.toUpperCase(),
+    group: "",
+    oee: r.oee,
+    availability: r.availability,
+    performance: r.performance,
+    quality: r.quality,
+    downtime: 0,
+  }));
+}
+
+export default function ComparisonSection({ serverData }: { serverData?: PlantRow[] }) {
+  const [data, setData] = useState<PlantComparisonData[]>(serverData ? toComparisonData(serverData) : []);
 
   useEffect(() => {
+    if (serverData && serverData.length > 0) return; // already have server data
     getAllPlantsLatestOEE()
-      .then((d) => {
-
-        const formatted = d.map(r => ({
-          slug: r.slug,
-          name: r.slug.toUpperCase(),
-          group: "",
-          oee: r.oee,
-          availability: r.availability,
-          performance: r.performance,
-          quality: r.quality,
-          downtime: 0
-        }));
-        setData(formatted);
-      })
+      .then((d) => setData(toComparisonData(d)))
       .catch(console.error);
-  }, []);
+  }, [serverData]);
 
   if (!data.length) return null;
 
@@ -46,11 +49,11 @@ export default function ComparisonSection() {
   return (
     <section id="analytics" className="relative border-t border-[var(--industrial-line)] bg-[var(--industrial-bg)] px-6 py-28 lg:px-10">
       <div className="mx-auto max-w-[1400px]">
-        <p className="font-mono-industrial text-xs tracking-[0.35em] text-[var(--accent-cyan)]">EXECUTIVE COMPARISON</p>
+        <p className="font-mono-industrial text-lg tracking-[0.2em] text-[var(--accent-cyan)]">EXECUTIVE COMPARISON</p>
         <h2 className="font-display mt-2 text-4xl font-semibold text-[var(--steel-light)] sm:text-6xl">
-          GLOBAL FLEET ANALYSIS
+          OVERALL PLANTS ANALYSIS
         </h2>
-        <p className="mt-4 font-mono-industrial text-sm text-[var(--steel)] max-w-2xl">
+        <p className="mt-4 font-mono-industrial text-base text-[var(--steel)] max-w-2xl">
           Cross-sectional performance comparison of all industrial nodes based on the latest operating month.
         </p>
 
@@ -115,7 +118,7 @@ export default function ComparisonSection() {
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="glass-panel rounded-lg p-6">
-      <p className="mb-6 font-mono-industrial text-[11px] tracking-[0.25em] text-[var(--steel)]">{title}</p>
+      <p className="mb-6 font-mono-industrial text-sm tracking-[0.15em] text-[var(--steel)]">{title}</p>
       {children}
     </div>
   );

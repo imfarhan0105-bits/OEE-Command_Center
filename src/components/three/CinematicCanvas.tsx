@@ -69,7 +69,7 @@ function Scene({ progressRef }: { progressRef: React.MutableRefObject<number> })
       <directionalLight position={[5, 10, 5]} intensity={0.4} color="#c7ccd4" />
       <CameraRig progressRef={progressRef} />
       <FactoryArchitecture intensity={progress} />
-      <DataParticles count={300} radius={7} />
+      <DataParticles count={150} radius={7} />
       <group position={[0, 0.5, -1]}>
         <APQRings align={align} />
       </group>
@@ -80,7 +80,7 @@ function Scene({ progressRef }: { progressRef: React.MutableRefObject<number> })
 export default function CinematicCanvas({ progressRef }: CinematicCanvasProps) {
   return (
     <Canvas
-      dpr={[1, 1.6]}
+      dpr={[1, 1.2]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       camera={{ fov: 55, position: [0, 1.4, 14] }}
       onCreated={({ gl }) => {

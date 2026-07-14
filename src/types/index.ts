@@ -17,6 +17,7 @@ export type PlantKind =
   | "forging"
   | "cnc"
   | "vmc"
+  | "cnc-vmc"
   | "integrated"
   | "production-line"
   | "precision-cell"

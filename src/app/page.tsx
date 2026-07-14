@@ -2,18 +2,19 @@ import HeroScrollExperience from "@/components/sections/HeroScrollExperience";
 import GroupOEESection from "@/components/sections/GroupOEESection";
 import ComparisonSection from "@/components/sections/ComparisonSection";
 import PlantsGridSection from "@/components/sections/PlantsGridSection";
-import { getCompanyOEE } from "@/services/oeeService";
+import { getHomePageData } from "@/services/oeeService";
 
 export default async function Home() {
-  const companyOee = await getCompanyOEE();
-  
+  const { companyOee, oeeMonthLabel, sector25Trend, sector69Trend, allPlantsLatest } =
+    await getHomePageData();
+
   return (
     <main id="overview" className="bg-[var(--industrial-bg)] text-[var(--steel-light)]">
-      <HeroScrollExperience companyOee={companyOee} />
-      <GroupOEESection id="sector-25" groupSlug="sector-25" groupName="SECTOR 25" accent="var(--accent-good)" />
-      <GroupOEESection id="sector-69" groupSlug="sector-69" groupName="SECTOR 69" accent="var(--accent-cyan)" />
-      <ComparisonSection />
-      <PlantsGridSection />
+      <HeroScrollExperience companyOee={companyOee} oeeMonthLabel={oeeMonthLabel} />
+      <GroupOEESection id="sector-25" groupSlug="sector-25" groupName="SECTOR 25" accent="var(--accent-good)" serverTrend={sector25Trend} />
+      <GroupOEESection id="sector-69" groupSlug="sector-69" groupName="SECTOR 69" accent="var(--accent-cyan)" serverTrend={sector69Trend} />
+      <ComparisonSection serverData={allPlantsLatest} />
+      <PlantsGridSection serverLatest={allPlantsLatest} />
 
       <footer className="border-t border-[var(--industrial-line)] bg-[var(--industrial-bg)] px-6 py-12 lg:px-10">
         <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-4 sm:flex-row">

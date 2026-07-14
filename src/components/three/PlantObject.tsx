@@ -14,6 +14,7 @@ const KIND_COLOR: Record<PlantKind, string> = {
   forging: "#d97706",
   cnc: "#0284c7",
   vmc: "#16a34a",
+  "cnc-vmc": "#0284c7",
   integrated: "#d97706",
   "production-line": "#0284c7",
   "precision-cell": "#16a34a",
@@ -357,6 +358,16 @@ export default function PlantObject({ kind }: PlantObjectProps) {
       {kind === "forging" && <ForgingObject color={color} />}
       {kind === "cnc" && <CNCObject color={color} />}
       {kind === "vmc" && <VMCObject color={color} />}
+      {kind === "cnc-vmc" && (
+        <group>
+          <group position={[-4.5, 0, 0]} scale={2}>
+            <CNCObject color={KIND_COLOR["cnc"]} />
+          </group>
+          <group position={[4.5, 0, 0]} scale={2}>
+            <VMCObject color={KIND_COLOR["vmc"]} />
+          </group>
+        </group>
+      )}
       {(kind === "integrated" || kind === "production-line" || kind === "precision-cell" || kind === "mechanical") && (
         <GenericMechanical color={color} />
       )}

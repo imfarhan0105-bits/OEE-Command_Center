@@ -12,10 +12,13 @@ import PlantAnalytics from "./PlantAnalytics";
 import BigStat from "@/components/ui/BigStat";
 import { getOEETrend } from "@/services/oeeService";
 import { getDowntime } from "@/services/downtimeService";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 const PlantHero3D = dynamic(() => import("./PlantHero3D"), { ssr: false });
 
 export default function PlantDashboardClient({ plant }: { plant: Plant }) {
+  const { role } = useAuth();
+  const isEditor = role === "editor";
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
@@ -72,7 +75,7 @@ export default function PlantDashboardClient({ plant }: { plant: Plant }) {
           <PlantHero3D kind={plant.kind} />
         </div>
         <div className="relative z-10 max-w-2xl">
-          <p className="font-mono-industrial text-xs tracking-[0.35em] text-[var(--accent-cyan)]">
+          <p className="font-mono-industrial text-sm tracking-[0.25em] text-[var(--accent-cyan)]">
             {plant.group === "sector-25" ? "SECTOR 25" : plant.group === "sector-69" ? "SECTOR 69" : "INDEPENDENT"}
           </p>
           <h1 className="font-display mt-3 text-5xl font-semibold text-[var(--steel-light)] sm:text-7xl">{plant.name}</h1>
@@ -100,15 +103,25 @@ export default function PlantDashboardClient({ plant }: { plant: Plant }) {
         </div>
       </section>
 
-      <section className="border-b border-[var(--industrial-line)] px-6 py-20 lg:px-10">
-        <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-8 lg:grid-cols-2">
-          <OEEDataEntryForm plantSlug={plant.slug} year={year} month={month} onSaved={handleSaved} />
-          <DowntimeEntryForm plantSlug={plant.slug} year={year} month={month} onSaved={handleSaved} />
-        </div>
-        <p className="mx-auto mt-4 max-w-[1400px] font-mono-industrial text-[10px] text-[var(--steel)]">
-          Editing {monthLabel(year, month)} — data is stored permanently in the database.
-        </p>
-      </section>
+      {/* Data entry — editors only */}
+      {isEditor ? (
+        <section className="border-b border-[var(--industrial-line)] px-6 py-20 lg:px-10">
+          <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-8 lg:grid-cols-2">
+            <OEEDataEntryForm plantSlug={plant.slug} year={year} month={month} onSaved={handleSaved} />
+            <DowntimeEntryForm plantSlug={plant.slug} year={year} month={month} onSaved={handleSaved} />
+          </div>
+          <p className="mx-auto mt-4 max-w-[1400px] font-mono-industrial text-xs text-[var(--steel)]">
+            Editing {monthLabel(year, month)} — data is stored permanently in the database.
+          </p>
+        </section>
+      ) : (
+        <section className="border-b border-[var(--industrial-line)] px-6 py-10 lg:px-10">
+          <div className="mx-auto max-w-[1400px] rounded-md border border-[var(--accent-warn)]/20 bg-[var(--accent-warn)]/5 px-6 py-4">
+            <p className="font-mono-industrial text-xs tracking-[0.2em] text-[var(--accent-warn)]">VIEW-ONLY ACCESS</p>
+            <p className="mt-1 text-sm text-[var(--steel)]">Data entry is restricted to authorised editors. Contact your system administrator for edit access.</p>
+          </div>
+        </section>
+      )}
 
       {!loading && (trend.length > 0 || downtimeSeries.length > 0) && (
         <section className="px-6 py-20 lg:px-10">

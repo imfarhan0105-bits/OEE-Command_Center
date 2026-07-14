@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { AggregatedOEE, MonthlyOEEData, OEETrendPoint, PlantGroupSlug, PlantSlug } from "@/types";
 import { monthLabel } from "@/lib/oee";
 
@@ -104,11 +104,33 @@ export async function getLatestGroupOEE(groupSlug: PlantGroupSlug): Promise<Aggr
   return { groupSlug, ...latest };
 }
 
-export async function getCompanyOEE(): Promise<number> {
-  const groups: PlantGroupSlug[] = ["sector-25", "sector-69"];
-  const latest = await Promise.all(groups.map((g) => getLatestGroupOEE(g)));
-  if (latest.length === 0) return 0;
-  return Math.round((latest.reduce((s, g) => s + g.oee, 0) / latest.length) * 10) / 10;
+export function getPreviousMonthInfo(): { year: number; month: number; label: string } {
+  const now = new Date();
+  let year = now.getFullYear();
+  let month = now.getMonth(); // 0-indexed → this is already "previous month" (Jan=0 means Dec of prev year)
+  if (month === 0) {
+    month = 12;
+    year -= 1;
+  }
+  const label = monthLabel(year, month);
+  return { year, month, label };
+}
+
+export async function getCompanyOEE(): Promise<{ oee: number; monthLabel: string }> {
+  const { year, month, label } = getPreviousMonthInfo();
+
+  const q = query(
+    collection(db, "monthly_oee"),
+    where("year", "==", year),
+    where("month", "==", month)
+  );
+  const snap = await getDocs(q);
+  const rows = snap.docs.map(d => d.data() as MonthlyOEEData);
+
+  if (rows.length === 0) return { oee: 0, monthLabel: label };
+
+  const avgOee = Math.round((rows.reduce((s, r) => s + (r.oee || 0), 0) / rows.length) * 10) / 10;
+  return { oee: avgOee, monthLabel: label };
 }
 
 export async function getAllPlantsLatestOEE() {
@@ -133,4 +155,22 @@ export async function getAllPlantsLatestOEE() {
     year: r.year,
     month: r.month
   }));
+}
+
+/** Batch-fetches all data needed by the homepage in parallel — call once from page.tsx */
+export async function getHomePageData() {
+  const [companyOeeResult, sector25Trend, sector69Trend, allPlantsLatest] = await Promise.all([
+    getCompanyOEE(),
+    getAggregatedGroupOEE("sector-25"),
+    getAggregatedGroupOEE("sector-69"),
+    getAllPlantsLatestOEE(),
+  ]);
+
+  return {
+    companyOee: companyOeeResult.oee,
+    oeeMonthLabel: companyOeeResult.monthLabel,
+    sector25Trend,
+    sector69Trend,
+    allPlantsLatest,
+  };
 }

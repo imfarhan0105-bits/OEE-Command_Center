@@ -9,7 +9,7 @@ const CinematicCanvas = dynamic(() => import("@/components/three/CinematicCanvas
 
 if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
 
-export default function HeroScrollExperience({ companyOee = 0 }: { companyOee?: number }) {
+export default function HeroScrollExperience({ companyOee = 0, oeeMonthLabel = "" }: { companyOee?: number; oeeMonthLabel?: string }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef(0);
@@ -48,51 +48,53 @@ export default function HeroScrollExperience({ companyOee = 0 }: { companyOee?: 
           <h1 className="font-display mt-4 text-5xl font-semibold tracking-tight text-[#f1f3f5] sm:text-7xl">
             OEE COMMAND CENTER
           </h1>
-          <p className="font-display mt-6 max-w-xl text-lg text-[#8a929e] sm:text-2xl">
-            THE FACTORY. <span className="text-[#c7ccd4]">MEASURED IN REAL TIME.</span>
+          <p className="font-display mt-6 max-w-xl text-xl text-[#c7ccd4] sm:text-3xl">
+            THE FACTORY. <span className="text-[#e2e8f0]">MEASURED IN REAL TIME.</span>
           </p>
         </SceneText>
 
         <SceneText active={progress >= 0.18 && progress < 0.38} localProgress={(progress - 0.18) / 0.2}>
           <div className="flex items-center gap-4 font-display text-3xl font-semibold text-[#c7ccd4] sm:text-5xl">
             <span className="text-[#3ddc84]">A</span>
-            <span className="text-[#5b6270]">×</span>
+            <span className="text-[#8c95a3]">×</span>
             <span className="text-[#f5a623]">P</span>
-            <span className="text-[#5b6270]">×</span>
+            <span className="text-[#8c95a3]">×</span>
             <span className="text-[#4fd1ff]">Q</span>
           </div>
-          <p className="font-mono-industrial mt-3 text-xs tracking-[0.3em] text-[#5b6270]">
+          <p className="font-mono-industrial mt-4 text-base tracking-[0.25em] text-[#a0abb8]">
             AVAILABILITY × PERFORMANCE × QUALITY
           </p>
           <div className="mt-8 font-display text-7xl font-bold text-[#f1f3f5] sm:text-9xl">
-            {companyOee.toFixed(1)}
-            <span className="text-3xl text-[#5b6270] sm:text-5xl">%</span>
+            {Number(companyOee).toFixed(1)}
+            <span className="text-3xl text-[#8c95a3] sm:text-5xl">%</span>
           </div>
-          <p className="font-mono-industrial mt-2 text-xs tracking-[0.3em] text-[#4fd1ff]">COMPANY-WIDE OEE</p>
+          <p className="font-mono-industrial mt-3 text-lg tracking-[0.2em] text-[#4fd1ff]">
+            OVERALL PLANT OEE{oeeMonthLabel ? ` — ${oeeMonthLabel.toUpperCase()}` : ""}
+          </p>
         </SceneText>
 
         <SceneText active={progress >= 0.38 && progress < 0.62} localProgress={(progress - 0.38) / 0.24}>
-          <p className="font-mono-industrial text-xs tracking-[0.4em] text-[#4fd1ff]">INDUSTRIAL NODES</p>
+          <p className="font-mono-industrial text-lg tracking-[0.2em] text-[#4fd1ff]">INDUSTRIAL NODES</p>
           <div className="mt-6 grid grid-cols-2 gap-10 sm:grid-cols-5 text-center">
             <div>
-              <h2 className="font-display text-2xl font-semibold text-[#c7ccd4]">SECTOR 25</h2>
-              <p className="mt-2 font-mono-industrial text-[9px] text-[#5b6270]">FORGING · CNC · VMC</p>
+              <h2 className="font-display text-3xl font-semibold text-[#e2e8f0]">SECTOR 25</h2>
+              <p className="mt-2 font-mono-industrial text-sm text-[#a0abb8]">FORGING · CNC · VMC</p>
             </div>
             <div>
-              <h2 className="font-display text-2xl font-semibold text-[#c7ccd4]">SECTOR 69 IMT</h2>
-              <p className="mt-2 font-mono-industrial text-[9px] text-[#5b6270]">BLOCK B · C · D</p>
+              <h2 className="font-display text-3xl font-semibold text-[#e2e8f0]">SECTOR 69 IMT</h2>
+              <p className="mt-2 font-mono-industrial text-sm text-[#a0abb8]">BLOCK B · C · D</p>
             </div>
             <div>
-              <h2 className="font-display text-2xl font-semibold text-[#c7ccd4]">SECTOR 58</h2>
-              <p className="mt-2 font-mono-industrial text-[9px] text-[#5b6270]">PRODUCTION LINE</p>
+              <h2 className="font-display text-3xl font-semibold text-[#e2e8f0]">SECTOR 58</h2>
+              <p className="mt-2 font-mono-industrial text-sm text-[#a0abb8]">PRODUCTION LINE</p>
             </div>
             <div>
-              <h2 className="font-display text-2xl font-semibold text-[#c7ccd4]">UNIT 97</h2>
-              <p className="mt-2 font-mono-industrial text-[9px] text-[#5b6270]">MECHANICAL</p>
+              <h2 className="font-display text-3xl font-semibold text-[#e2e8f0]">UNIT 97</h2>
+              <p className="mt-2 font-mono-industrial text-sm text-[#a0abb8]">MECHANICAL</p>
             </div>
             <div>
-              <h2 className="font-display text-2xl font-semibold text-[#c7ccd4]">UNIT 94</h2>
-              <p className="mt-2 font-mono-industrial text-[9px] text-[#5b6270]">PRECISION CELL</p>
+              <h2 className="font-display text-3xl font-semibold text-[#e2e8f0]">UNIT 94</h2>
+              <p className="mt-2 font-mono-industrial text-sm text-[#a0abb8]">PRECISION CELL</p>
             </div>
           </div>
         </SceneText>

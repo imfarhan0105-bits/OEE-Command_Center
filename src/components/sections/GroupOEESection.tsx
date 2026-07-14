@@ -16,20 +16,23 @@ export default function GroupOEESection({
   groupName,
   id,
   accent = "#4fd1ff",
+  serverTrend,
 }: {
   groupSlug: PlantGroupSlug;
   groupName: string;
   id: string;
   accent?: string;
+  serverTrend?: OEETrendPoint[];
 }) {
-  const [trend, setTrend] = useState<OEETrendPoint[]>([]);
+  const [trend, setTrend] = useState<OEETrendPoint[]>(serverTrend ?? []);
   const plants = getPlantsInGroup(groupSlug);
 
   useEffect(() => {
+    if (serverTrend && serverTrend.length > 0) return; // already have server data
     getAggregatedGroupOEE(groupSlug)
       .then((data) => setTrend(data ?? []))
       .catch(console.error);
-  }, [groupSlug]);
+  }, [groupSlug, serverTrend]);
 
   if (!trend.length) {
     return (
@@ -67,11 +70,11 @@ export default function GroupOEESection({
       <div className="mx-auto max-w-[1400px]">
         <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="font-mono-industrial text-xs tracking-[0.35em]" style={{ color: accent }}>
+            <p className="font-mono-industrial text-lg tracking-[0.2em]" style={{ color: accent }}>
               MANUFACTURING GROUP
             </p>
             <h2 className="font-display mt-2 text-4xl font-semibold text-[var(--steel-light)] sm:text-6xl">{groupName}</h2>
-            <p className="mt-2 font-mono-industrial text-xs text-[var(--steel)]">
+            <p className="mt-2 font-mono-industrial text-sm text-[var(--steel)]">
               {plants.map((p) => p.shortName).join(" · ")}
             </p>
           </div>
@@ -99,7 +102,7 @@ export default function GroupOEESection({
           </div>
 
           <div className="glass-panel rounded-lg p-8">
-            <p className="mb-4 font-mono-industrial text-[11px] tracking-[0.3em] text-[var(--steel)]">OEE MONTHLY TREND</p>
+            <p className="mb-4 font-mono-industrial text-sm tracking-[0.2em] text-[var(--steel)]">OEE MONTHLY TREND</p>
             <OEETrendChart data={trend.slice(-6)} color={accent} />
           </div>
         </div>
@@ -111,7 +114,7 @@ export default function GroupOEESection({
 function MiniMetric({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div>
-      <p className="font-mono-industrial text-[9px] tracking-[0.2em] text-[#5b6270]">{label}</p>
+      <p className="font-mono-industrial text-xs tracking-[0.15em] text-[#8c95a3]">{label}</p>
       <p className="font-display text-2xl font-medium" style={{ color }}>
         {value.toFixed(1)}%
       </p>

@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { PLANTS } from "@/data/plants";
-import { monthLabel } from "@/lib/oee";
 import dynamic from "next/dynamic";
-const Logo3D = dynamic(() => import("@/components/three/Logo3D"), { 
+import { useAuth } from "@/components/auth/AuthProvider";
+
+const Logo3D = dynamic(() => import("@/components/three/Logo3D"), {
   ssr: false,
   loading: () => <div className="h-12 w-32 md:w-40 flex-shrink-0" />
 });
@@ -20,6 +21,7 @@ const LINKS = [
 
 export default function TopNav() {
   const [switcherOpen, setSwitcherOpen] = useState(false);
+  const { user, role, logOut } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-[var(--industrial-line)] bg-[var(--industrial-bg)]/80 backdrop-blur-xl">
@@ -41,15 +43,18 @@ export default function TopNav() {
               {l.label}
             </a>
           ))}
-          <Link
-            href="/plants/sector-25-forging"
-            className="font-mono-industrial text-[11px] text-[var(--steel)] transition-colors hover:text-[var(--steel-light)]"
-          >
-            DATA ENTRY
-          </Link>
+          {role === "editor" && (
+            <Link
+              href="/plants/sector-25-forging"
+              className="font-mono-industrial text-[11px] text-[var(--accent-cyan)] transition-colors hover:text-[var(--steel-light)]"
+            >
+              DATA ENTRY
+            </Link>
+          )}
         </nav>
 
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-3">
+          {/* Plant switcher */}
           <div className="relative">
             <button
               onClick={() => setSwitcherOpen((v) => !v)}
@@ -72,6 +77,31 @@ export default function TopNav() {
               </div>
             )}
           </div>
+
+          {/* User status */}
+          {user && (
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-2">
+                <span className="font-mono-industrial text-[11px] text-[var(--steel-light)]">
+                  {user.name}
+                </span>
+                <span className="font-mono-industrial text-[10px] text-[var(--steel)]">/</span>
+                <span className="font-mono-industrial text-[11px] text-[var(--steel)]">
+                  {role === "editor" ? "EDITOR VIEW" : "GUEST VIEW"}
+                </span>
+              </div>
+
+              <div className="h-4 w-px bg-[var(--industrial-line)]" />
+
+              <button
+                onClick={logOut}
+                title="Sign out"
+                className="font-mono-industrial text-[10px] text-[var(--steel)] transition-colors hover:text-[var(--steel-light)]"
+              >
+                SIGN OUT
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

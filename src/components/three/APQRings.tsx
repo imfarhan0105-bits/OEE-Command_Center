@@ -27,7 +27,7 @@ function Ring({ color, radius, tilt, offset, align, spinSpeed }: RingProps) {
 
   return (
     <mesh ref={mesh}>
-      <torusGeometry args={[radius, 0.12, 24, 120]} />
+      <torusGeometry args={[radius, 0.12, 16, 64]} />
       <meshStandardMaterial
         color={color}
         emissive={color}
