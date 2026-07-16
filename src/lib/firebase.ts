@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
@@ -16,7 +16,22 @@ const app = firebaseConfig.apiKey
   : ({} as any);
 
 const auth = firebaseConfig.apiKey ? getAuth(app) : ({} as any);
-const db = firebaseConfig.apiKey ? getFirestore(app) : ({} as any);
+
+let db = {} as any;
+if (firebaseConfig.apiKey) {
+  if (typeof window !== "undefined") {
+    try {
+      db = initializeFirestore(app, {
+        localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+      });
+    } catch (e) {
+      db = getFirestore(app);
+    }
+  } else {
+    db = getFirestore(app);
+  }
+}
+
 const googleProvider = new GoogleAuthProvider();
 
 export { app, auth, db, googleProvider };

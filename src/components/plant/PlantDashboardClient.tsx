@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { Plant, OEETrendPoint, DowntimeData, PlantSlug } from "@/types";
 import { AVAILABLE_MONTHS } from "@/data/mockOee";
 import { compare, monthLabel } from "@/lib/oee";
@@ -17,6 +18,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 const PlantHero3D = dynamic(() => import("./PlantHero3D"), { ssr: false });
 
 export default function PlantDashboardClient({ plant }: { plant: Plant }) {
+  const router = useRouter();
   const { role } = useAuth();
   const isEditor = role === "editor";
   const now = new Date();
@@ -64,6 +66,7 @@ export default function PlantDashboardClient({ plant }: { plant: Plant }) {
 
   function handleSaved() {
     setRefreshKey((k) => k + 1);
+    router.refresh();
   }
 
   return (

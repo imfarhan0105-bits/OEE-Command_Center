@@ -4,24 +4,41 @@ import { AggregatedOEE, MonthlyOEEData, OEETrendPoint, PlantGroupSlug, PlantSlug
 import { monthLabel } from "@/lib/oee";
 
 export async function getAvailableMonths() {
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1;
+  const q = query(collection(db, "monthly_oee"));
+  const snap = await getDocs(q);
+  const rows = snap.docs.map(d => d.data() as MonthlyOEEData);
+  
+  let currentYear = new Date().getFullYear();
+  let currentMonth = new Date().getMonth() + 1; // current month
+  
+  if (rows.length > 0) {
+    let maxYear = 0;
+    let maxMonth = 0;
+    for (const r of rows) {
+      if (r.year > maxYear || (r.year === maxYear && r.month > maxMonth)) {
+        maxYear = r.year;
+        maxMonth = r.month;
+      }
+    }
+    currentYear = maxYear;
+    currentMonth = maxMonth;
+  } else {
+    currentMonth -= 1; 
+    if (currentMonth === 0) {
+      currentMonth = 12;
+      currentYear -= 1;
+    }
+  }
 
   const windowMonths = [];
-  for (let i = -4; i <= 1; i++) {
+  for (let i = -5; i <= 0; i++) {
     let y = currentYear;
     let m = currentMonth + i;
-    if (m < 1) {
+    while (m < 1) {
       m += 12;
       y -= 1;
-    } else if (m > 12) {
-      m -= 12;
-      y += 1;
     }
-    if (y > 2026 || (y === 2026 && m >= 6)) {
-      windowMonths.push({ year: y, month: m });
-    }
+    windowMonths.push({ year: y, month: m });
   }
   return windowMonths;
 }
@@ -117,20 +134,24 @@ export function getPreviousMonthInfo(): { year: number; month: number; label: st
 }
 
 export async function getCompanyOEE(): Promise<{ oee: number; monthLabel: string }> {
-  const { year, month, label } = getPreviousMonthInfo();
-
-  const q = query(
-    collection(db, "monthly_oee"),
-    where("year", "==", year),
-    where("month", "==", month)
-  );
+  const q = query(collection(db, "monthly_oee"));
   const snap = await getDocs(q);
   const rows = snap.docs.map(d => d.data() as MonthlyOEEData);
 
-  if (rows.length === 0) return { oee: 0, monthLabel: label };
+  if (rows.length === 0) return { oee: 0, monthLabel: monthLabel(new Date().getFullYear(), new Date().getMonth() || 12) };
 
-  const avgOee = Math.round((rows.reduce((s, r) => s + (r.oee || 0), 0) / rows.length) * 10) / 10;
-  return { oee: avgOee, monthLabel: label };
+  let maxYear = 0;
+  let maxMonth = 0;
+  for (const r of rows) {
+    if (r.year > maxYear || (r.year === maxYear && r.month > maxMonth)) {
+      maxYear = r.year;
+      maxMonth = r.month;
+    }
+  }
+
+  const latestRows = rows.filter(r => r.year === maxYear && r.month === maxMonth);
+  const avgOee = Math.round((latestRows.reduce((s, r) => s + (r.oee || 0), 0) / latestRows.length) * 10) / 10;
+  return { oee: avgOee, monthLabel: monthLabel(maxYear, maxMonth) };
 }
 
 export async function getAllPlantsLatestOEE() {
@@ -153,7 +174,8 @@ export async function getAllPlantsLatestOEE() {
     performance: r.performance,
     quality: r.quality,
     year: r.year,
-    month: r.month
+    month: r.month,
+    downtime: r.totalDowntime ?? 0
   }));
 }
 

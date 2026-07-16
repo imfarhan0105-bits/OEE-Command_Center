@@ -4,6 +4,8 @@ import ComparisonSection from "@/components/sections/ComparisonSection";
 import PlantsGridSection from "@/components/sections/PlantsGridSection";
 import { getHomePageData } from "@/services/oeeService";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const { companyOee, oeeMonthLabel, sector25Trend, sector69Trend, allPlantsLatest } =
     await getHomePageData();

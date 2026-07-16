@@ -51,6 +51,7 @@ export interface MonthlyOEEData {
   /** Derived = availability * performance * quality / 10000. Persisted for
    * convenience but should always be re-derivable from the three inputs. */
   oee: number;
+  totalDowntime?: number;
 }
 
 export interface DowntimeCategory {

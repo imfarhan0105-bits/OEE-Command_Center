@@ -16,7 +16,7 @@ interface PlantComparisonData {
 
 import { getAllPlantsLatestOEE } from "@/services/oeeService";
 
-type PlantRow = { slug: string; oee: number; availability: number; performance: number; quality: number; year: number; month: number };
+type PlantRow = { slug: string; oee: number; availability: number; performance: number; quality: number; year: number; month: number; downtime: number };
 
 function toComparisonData(rows: PlantRow[]): PlantComparisonData[] {
   return rows.map(r => ({
@@ -27,7 +27,7 @@ function toComparisonData(rows: PlantRow[]): PlantComparisonData[] {
     availability: r.availability,
     performance: r.performance,
     quality: r.quality,
-    downtime: 0,
+    downtime: r.downtime,
   }));
 }
 

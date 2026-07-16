@@ -47,31 +47,19 @@ function CameraRig({ progressRef }: { progressRef: React.MutableRefObject<number
 /** Reads the scroll-progress ref every frame and republishes it as local
  * state at a throttled cadence, so downstream 3D children can react to it
  * via normal props without ever touching `.current` inside a render body. */
-function useProgressState(progressRef: React.MutableRefObject<number>) {
-  const [progress, setProgress] = useState(0);
-  const lastRef = useRef(0);
-  useFrame(() => {
-    const p = progressRef.current;
-    if (Math.abs(p - lastRef.current) > 0.002) {
-      lastRef.current = p;
-      setProgress(p);
-    }
-  });
-  return progress;
-}
+// useProgressState has been removed to prevent React re-renders which cause scroll lag.
+// Downstream components now read progressRef directly inside their own useFrame loops.
 
 function Scene({ progressRef }: { progressRef: React.MutableRefObject<number> }) {
-  const progress = useProgressState(progressRef);
-  const align = Math.max(0, Math.min(1, (progress - 0.2) / 0.16));
   return (
     <>
       <ambientLight intensity={0.15} />
       <directionalLight position={[5, 10, 5]} intensity={0.4} color="#c7ccd4" />
       <CameraRig progressRef={progressRef} />
-      <FactoryArchitecture intensity={progress} />
+      <FactoryArchitecture progressRef={progressRef} />
       <DataParticles count={150} radius={7} />
       <group position={[0, 0.5, -1]}>
-        <APQRings align={align} />
+        <APQRings progressRef={progressRef} />
       </group>
     </>
   );

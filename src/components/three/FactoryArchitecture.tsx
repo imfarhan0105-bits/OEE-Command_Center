@@ -34,11 +34,12 @@ function Block({ position, size, color = "#1a1d22", emissive = "#000000", emissi
 }
 
 interface FactoryArchitectureProps {
-  intensity?: number; // 0-1 how "lit up" the scene is (scroll driven)
+  progressRef: React.MutableRefObject<number>;
 }
 
-export default function FactoryArchitecture({ intensity = 0.4 }: FactoryArchitectureProps) {
+export default function FactoryArchitecture({ progressRef }: FactoryArchitectureProps) {
   const group = useRef<THREE.Group>(null);
+  const materialsRef = useRef<(THREE.MeshBasicMaterial | null)[]>([]);
 
   const blocks = useMemo(() => {
     const arr: BlockProps[] = [];
@@ -74,6 +75,11 @@ export default function FactoryArchitecture({ intensity = 0.4 }: FactoryArchitec
   useFrame((state) => {
     if (!group.current) return;
     group.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.02) * 0.05;
+    
+    const intensity = progressRef.current;
+    materialsRef.current.forEach(mat => {
+      if (mat) mat.opacity = 0.25 + intensity * 0.5;
+    });
   });
 
   return (
@@ -95,7 +101,11 @@ export default function FactoryArchitecture({ intensity = 0.4 }: FactoryArchitec
           rotation={l.axis === "x" ? [0, 0, 0] : [0, Math.PI / 2, 0]}
         >
           <boxGeometry args={[l.length, 0.02, 0.02]} />
-          <meshBasicMaterial color="#4fd1ff" transparent opacity={0.25 + intensity * 0.5} />
+          <meshBasicMaterial 
+            ref={(el) => { materialsRef.current[i] = el; }}
+            color="#4fd1ff" 
+            transparent 
+          />
         </mesh>
       ))}
 
