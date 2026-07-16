@@ -68,12 +68,13 @@ export async function getOEETrend(plantSlug: PlantSlug): Promise<OEETrendPoint[]
 
 export async function getAggregatedGroupOEE(groupSlug: PlantGroupSlug): Promise<OEETrendPoint[]> {
   const SECTOR25 = ["sector-25-forging", "sector-25-cnc", "sector-25-vmc"];
-  const IMT = ["sector-69-block-b", "sector-69-block-c", "sector-69-block-d", "sector-58", "unit-94", "unit-97"];
-  const slugs = groupSlug === "sector-25" ? SECTOR25 : IMT;
+  const SECTOR69 = ["sector-69-block-b", "sector-69-block-c", "sector-69-block-d"];
+  
+  const slugs = groupSlug === "sector-25" ? SECTOR25 : groupSlug === "sector-69" ? SECTOR69 : [];
 
   const q = query(
     collection(db, "monthly_oee"),
-    where("plantSlug", "in", slugs)
+    where("plantSlug", "in", slugs.length > 0 ? slugs : ["invalid"])
   );
   
   const snap = await getDocs(q);
@@ -83,8 +84,10 @@ export async function getAggregatedGroupOEE(groupSlug: PlantGroupSlug): Promise<
 
   return availableMonths.map(({ year, month }) => {
     const monthRows = rows.filter(r => r.year === year && r.month === month);
+    const expectedCount = slugs.length; // e.g. 3 blocks
+
     const avg = (key: "availability" | "performance" | "quality" | "oee") =>
-      monthRows.length ? Math.round((monthRows.reduce((s, r) => s + (r[key] as number), 0) / monthRows.length) * 10) / 10 : 0;
+      monthRows.length > 0 ? Math.round((monthRows.reduce((s, r) => s + (r[key] as number), 0) / expectedCount) * 10) / 10 : 0;
     
     return { 
       year, 
@@ -130,7 +133,8 @@ export async function getCompanyOEE(): Promise<{ oee: number; monthLabel: string
 
   if (rows.length === 0) return { oee: 0, monthLabel: label };
 
-  const avgOee = Math.round((rows.reduce((s, r) => s + (r.oee || 0), 0) / rows.length) * 10) / 10;
+  const EXPECTED_PLANTS_COUNT = 9;
+  const avgOee = Math.round((rows.reduce((s, r) => s + (r.oee || 0), 0) / EXPECTED_PLANTS_COUNT) * 10) / 10;
   return { oee: avgOee, monthLabel: label };
 }
 
