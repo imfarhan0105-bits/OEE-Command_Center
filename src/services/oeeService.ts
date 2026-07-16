@@ -4,36 +4,20 @@ import { AggregatedOEE, MonthlyOEEData, OEETrendPoint, PlantGroupSlug, PlantSlug
 import { monthLabel } from "@/lib/oee";
 
 export async function getAvailableMonths() {
-  const q = query(collection(db, "monthly_oee"));
-  const snap = await getDocs(q);
-  const rows = snap.docs.map(d => d.data() as MonthlyOEEData);
+  const now = new Date();
+  let currentYear = now.getFullYear();
+  let prevMonth = now.getMonth(); // 0-indexed month is equivalent to previous month (Jan=0 means Dec, Feb=1 means Jan)
   
-  let currentYear = new Date().getFullYear();
-  let currentMonth = new Date().getMonth() + 1; // current month
-  
-  if (rows.length > 0) {
-    let maxYear = 0;
-    let maxMonth = 0;
-    for (const r of rows) {
-      if (r.year > maxYear || (r.year === maxYear && r.month > maxMonth)) {
-        maxYear = r.year;
-        maxMonth = r.month;
-      }
-    }
-    currentYear = maxYear;
-    currentMonth = maxMonth;
-  } else {
-    currentMonth -= 1; 
-    if (currentMonth === 0) {
-      currentMonth = 12;
-      currentYear -= 1;
-    }
+  if (prevMonth === 0) {
+    prevMonth = 12;
+    currentYear -= 1;
   }
 
   const windowMonths = [];
-  for (let i = -5; i <= 0; i++) {
+  // 5 months ending at prevMonth
+  for (let i = -4; i <= 0; i++) {
     let y = currentYear;
-    let m = currentMonth + i;
+    let m = prevMonth + i;
     while (m < 1) {
       m += 12;
       y -= 1;
@@ -134,24 +118,20 @@ export function getPreviousMonthInfo(): { year: number; month: number; label: st
 }
 
 export async function getCompanyOEE(): Promise<{ oee: number; monthLabel: string }> {
-  const q = query(collection(db, "monthly_oee"));
+  const { year, month, label } = getPreviousMonthInfo();
+
+  const q = query(
+    collection(db, "monthly_oee"),
+    where("year", "==", year),
+    where("month", "==", month)
+  );
   const snap = await getDocs(q);
   const rows = snap.docs.map(d => d.data() as MonthlyOEEData);
 
-  if (rows.length === 0) return { oee: 0, monthLabel: monthLabel(new Date().getFullYear(), new Date().getMonth() || 12) };
+  if (rows.length === 0) return { oee: 0, monthLabel: label };
 
-  let maxYear = 0;
-  let maxMonth = 0;
-  for (const r of rows) {
-    if (r.year > maxYear || (r.year === maxYear && r.month > maxMonth)) {
-      maxYear = r.year;
-      maxMonth = r.month;
-    }
-  }
-
-  const latestRows = rows.filter(r => r.year === maxYear && r.month === maxMonth);
-  const avgOee = Math.round((latestRows.reduce((s, r) => s + (r.oee || 0), 0) / latestRows.length) * 10) / 10;
-  return { oee: avgOee, monthLabel: monthLabel(maxYear, maxMonth) };
+  const avgOee = Math.round((rows.reduce((s, r) => s + (r.oee || 0), 0) / rows.length) * 10) / 10;
+  return { oee: avgOee, monthLabel: label };
 }
 
 export async function getAllPlantsLatestOEE() {
@@ -159,8 +139,13 @@ export async function getAllPlantsLatestOEE() {
   const snap = await getDocs(q);
   const allRows = snap.docs.map(d => d.data() as MonthlyOEEData);
 
+  const { year: maxAllowedYear, month: maxAllowedMonth } = getPreviousMonthInfo();
+
   const latestMap = new Map<string, MonthlyOEEData>();
   for (const row of allRows) {
+    if (row.year > maxAllowedYear || (row.year === maxAllowedYear && row.month > maxAllowedMonth)) {
+      continue; // ignore future data
+    }
     const existing = latestMap.get(row.plantSlug);
     if (!existing || row.year > existing.year || (row.year === existing.year && row.month > existing.month)) {
       latestMap.set(row.plantSlug, row);
