@@ -103,6 +103,15 @@ export default function ComparisonSection({ serverData }: { serverData?: PlantRo
                   cursor={{ fill: "var(--industrial-panel-2)", opacity: 0.5 }}
                   contentStyle={{ backgroundColor: "var(--industrial-panel)", borderColor: "var(--industrial-line)", borderRadius: "6px" }}
                   itemStyle={{ color: "var(--accent-bad)" }}
+                  formatter={(value: any) => {
+                    const mins = Number(value) || 0;
+                    const hours = Math.floor(mins / 60);
+                    const remMins = mins % 60;
+                    if (hours > 0) {
+                      return [`${mins} mins (${hours}h ${remMins}m)`, "Total Downtime"];
+                    }
+                    return [`${mins} mins`, "Total Downtime"];
+                  }}
                 />
                 <Bar dataKey="downtime" name="Total Minutes" fill="var(--accent-bad)" radius={[4, 4, 0, 0]} barSize={40} />
               </BarChart>

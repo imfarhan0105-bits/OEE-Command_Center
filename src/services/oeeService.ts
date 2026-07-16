@@ -2,6 +2,7 @@ import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { AggregatedOEE, MonthlyOEEData, OEETrendPoint, PlantGroupSlug, PlantSlug } from "@/types";
 import { monthLabel } from "@/lib/oee";
+import { getAllPlantsDowntimeLatest } from "./downtimeService";
 
 export async function getAvailableMonths() {
   const now = new Date();
@@ -170,11 +171,12 @@ export async function getAllPlantsLatestOEE() {
 
 /** Batch-fetches all data needed by the homepage in parallel — call once from page.tsx */
 export async function getHomePageData() {
-  const [companyOeeResult, sector25Trend, sector69Trend, allPlantsLatest] = await Promise.all([
+  const [companyOeeResult, sector25Trend, sector69Trend, allPlantsLatest, allPlantsDowntimeLatest] = await Promise.all([
     getCompanyOEE(),
     getAggregatedGroupOEE("sector-25"),
     getAggregatedGroupOEE("sector-69"),
     getAllPlantsLatestOEE(),
+    getAllPlantsDowntimeLatest(),
   ]);
 
   return {
@@ -183,5 +185,6 @@ export async function getHomePageData() {
     sector25Trend,
     sector69Trend,
     allPlantsLatest,
+    allPlantsDowntimeLatest,
   };
 }

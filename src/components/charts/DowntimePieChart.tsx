@@ -12,7 +12,12 @@ export default function DowntimePieChart({ categories }: { categories: DowntimeC
 
   return (
     <div className="relative">
-      <ResponsiveContainer width="100%" height={320}>
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center z-0">
+        <span className="font-mono-industrial text-[10px] tracking-[0.25em] text-[#5b6270]">TOTAL DOWNTIME</span>
+        <span className="font-display text-3xl font-semibold text-[#f1f3f5]">{total.toLocaleString()}</span>
+        <span className="font-mono-industrial text-[10px] text-[#5b6270]">MIN</span>
+      </div>
+      <ResponsiveContainer width="100%" height={320} className="relative z-10">
         <PieChart>
           <Pie
             data={categories}
@@ -44,11 +49,6 @@ export default function DowntimePieChart({ categories }: { categories: DowntimeC
           />
         </PieChart>
       </ResponsiveContainer>
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-mono-industrial text-[10px] tracking-[0.25em] text-[#5b6270]">TOTAL DOWNTIME</span>
-        <span className="font-display text-3xl font-semibold text-[#f1f3f5]">{total.toLocaleString()}</span>
-        <span className="font-mono-industrial text-[10px] text-[#5b6270]">MIN</span>
-      </div>
     </div>
   );
 }
